@@ -20,10 +20,14 @@ Located in [`interview_prep_tracker/`](interview_prep_tracker/).
 
 ### Install on your phone (OnePlus Nord 5)
 
-1. Download the APK from the latest PR artifacts or build locally (see below).
-2. On your Nord 5: **Settings → Security → Install unknown apps** → allow your file manager/browser.
-3. Transfer and open `app-arm64-v8a-release.apk` (smallest, ~20 MB for arm64 phones).
-4. Tap **Install**.
+**Download the APK from this repo:**
+
+1. Go to [`releases/prep-tracker-v1.0.0-arm64.apk`](releases/prep-tracker-v1.0.0-arm64.apk) on GitHub → **Download** (or use the [raw link](https://github.com/gowrii23/Cursor_Int_Prep/raw/cursor/interview-prep-app-99c3/releases/prep-tracker-v1.0.0-arm64.apk)).
+2. On your Nord 5: **Settings → Security & privacy → Install unknown apps** → allow your browser or file manager.
+3. Open the downloaded APK and tap **Install**.
+4. Allow **notifications** when prompted (daily 9 PM reminder).
+
+See [`releases/README.md`](releases/README.md) for details.
 
 ### Build APK locally
 
