@@ -1,0 +1,265 @@
+{
+  "phases": [
+    {
+      "id": "dsa",
+      "name": "DSA",
+      "icon": "code",
+      "sortOrder": 0,
+      "topics": [
+        {
+          "id": "trees_graphs",
+          "name": "Trees & Graphs",
+          "weight": 10,
+          "isCritical": true,
+          "items": [
+            {"title": "Binary tree traversals (iterative + recursive)", "practiceTarget": 5},
+            {"title": "BST operations & validation", "practiceTarget": 4},
+            {"title": "Graph BFS/DFS patterns", "practiceTarget": 8},
+            {"title": "Topological sort & cycle detection", "practiceTarget": 4},
+            {"title": "Union-Find / DSU", "practiceTarget": 3},
+            {"title": "Shortest path (Dijkstra, Bellman-Ford)", "practiceTarget": 5}
+          ]
+        },
+        {
+          "id": "arrays_strings",
+          "name": "Arrays & Strings",
+          "weight": 8,
+          "isCritical": true,
+          "items": [
+            {"title": "Two pointers & sliding window", "practiceTarget": 8},
+            {"title": "Prefix sums & difference arrays", "practiceTarget": 4},
+            {"title": "Hash map frequency patterns", "practiceTarget": 6},
+            {"title": "Kadane's & subarray problems", "practiceTarget": 4}
+          ]
+        },
+        {
+          "id": "dp",
+          "name": "Dynamic Programming",
+          "weight": 9,
+          "isCritical": true,
+          "items": [
+            {"title": "1D DP (climbing stairs, house robber)", "practiceTarget": 6},
+            {"title": "2D DP (grid paths, LCS)", "practiceTarget": 6},
+            {"title": "Knapsack variants", "practiceTarget": 5},
+            {"title": "State machine DP", "practiceTarget": 4}
+          ]
+        },
+        {
+          "id": "heaps",
+          "name": "Heaps & Priority Queues",
+          "weight": 7,
+          "isCritical": false,
+          "items": [
+            {"title": "Top-K elements patterns", "practiceTarget": 5},
+            {"title": "Merge K sorted lists", "practiceTarget": 3},
+            {"title": "Median from data stream", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "bit_manipulation",
+          "name": "Bit Manipulation",
+          "weight": 4,
+          "isCritical": false,
+          "items": [
+            {"title": "XOR tricks & single number patterns", "practiceTarget": 3},
+            {"title": "Bitmask DP basics", "practiceTarget": 2}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lld",
+      "name": "LLD",
+      "icon": "architecture",
+      "sortOrder": 1,
+      "topics": [
+        {
+          "id": "design_patterns",
+          "name": "Design Patterns",
+          "weight": 9,
+          "isCritical": true,
+          "items": [
+            {"title": "Strategy, Factory, Observer", "practiceTarget": 3},
+            {"title": "Decorator & Adapter", "practiceTarget": 2},
+            {"title": "Singleton pitfalls (thread-safe)", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "oop_solid",
+          "name": "OOP & SOLID",
+          "weight": 10,
+          "isCritical": true,
+          "items": [
+            {"title": "SOLID principles with examples", "practiceTarget": 5},
+            {"title": "Composition over inheritance", "practiceTarget": 3},
+            {"title": "Interface segregation in practice", "practiceTarget": 3}
+          ]
+        },
+        {
+          "id": "classic_lld",
+          "name": "Classic LLD Problems",
+          "weight": 10,
+          "isCritical": true,
+          "items": [
+            {"title": "Parking Lot", "practiceTarget": 2},
+            {"title": "Elevator System", "practiceTarget": 2},
+            {"title": "BookMyShow / Movie Ticket", "practiceTarget": 2},
+            {"title": "Vending Machine", "practiceTarget": 1},
+            {"title": "Splitwise", "practiceTarget": 2},
+            {"title": "Cache (LRU/LFU)", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "concurrency_lld",
+          "name": "Concurrency in LLD",
+          "weight": 8,
+          "isCritical": true,
+          "items": [
+            {"title": "Thread-safe collections design", "practiceTarget": 3},
+            {"title": "Producer-Consumer pattern", "practiceTarget": 2},
+            {"title": "Rate limiter design", "practiceTarget": 2}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "system_design",
+      "name": "System Design",
+      "icon": "cloud",
+      "sortOrder": 2,
+      "topics": [
+        {
+          "id": "fundamentals",
+          "name": "Fundamentals",
+          "weight": 10,
+          "isCritical": true,
+          "items": [
+            {"title": "CAP theorem & consistency models", "practiceTarget": 2},
+            {"title": "Load balancing strategies", "practiceTarget": 2},
+            {"title": "Caching layers (CDN, Redis)", "practiceTarget": 3},
+            {"title": "Database sharding & replication", "practiceTarget": 3}
+          ]
+        },
+        {
+          "id": "messaging",
+          "name": "Messaging & Streaming",
+          "weight": 9,
+          "isCritical": true,
+          "items": [
+            {"title": "Kafka internals (partitions, offsets)", "practiceTarget": 3},
+            {"title": "Exactly-once vs at-least-once", "practiceTarget": 2},
+            {"title": "Event-driven architecture patterns", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "classic_hld",
+          "name": "Classic HLD Problems",
+          "weight": 10,
+          "isCritical": true,
+          "items": [
+            {"title": "URL Shortener", "practiceTarget": 2},
+            {"title": "Twitter/X feed", "practiceTarget": 2},
+            {"title": "WhatsApp / Chat system", "practiceTarget": 2},
+            {"title": "YouTube / Video streaming", "practiceTarget": 2},
+            {"title": "Rate limiter (distributed)", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "scalability",
+          "name": "Scalability Patterns",
+          "weight": 8,
+          "isCritical": false,
+          "items": [
+            {"title": "Horizontal vs vertical scaling", "practiceTarget": 2},
+            {"title": "Microservices vs monolith tradeoffs", "practiceTarget": 2},
+            {"title": "Circuit breaker & bulkhead", "practiceTarget": 2}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "specialized",
+      "name": "Specialized",
+      "icon": "memory",
+      "sortOrder": 3,
+      "topics": [
+        {
+          "id": "jvm",
+          "name": "JVM Internals",
+          "weight": 8,
+          "isCritical": true,
+          "items": [
+            {"title": "Memory model (heap, stack, metaspace)", "practiceTarget": 2},
+            {"title": "GC algorithms (G1, ZGC overview)", "practiceTarget": 2},
+            {"title": "JIT compilation basics", "practiceTarget": 1}
+          ]
+        },
+        {
+          "id": "spring",
+          "name": "Spring Ecosystem",
+          "weight": 7,
+          "isCritical": false,
+          "items": [
+            {"title": "Spring Boot auto-configuration", "practiceTarget": 2},
+            {"title": "Bean lifecycle & scopes", "practiceTarget": 2},
+            {"title": "Transaction management", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "distributed",
+          "name": "Distributed Systems",
+          "weight": 9,
+          "isCritical": true,
+          "items": [
+            {"title": "Consensus (Raft/Paxos overview)", "practiceTarget": 2},
+            {"title": "Distributed locking", "practiceTarget": 2},
+            {"title": "Idempotency patterns", "practiceTarget": 2}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "behavioral",
+      "name": "Behavioral",
+      "icon": "psychology",
+      "sortOrder": 4,
+      "topics": [
+        {
+          "id": "star_stories",
+          "name": "STAR Stories",
+          "weight": 10,
+          "isCritical": true,
+          "items": [
+            {"title": "Conflict resolution story", "practiceTarget": 3},
+            {"title": "Technical leadership / mentorship", "practiceTarget": 3},
+            {"title": "Failure & learning story", "practiceTarget": 3},
+            {"title": "Cross-team collaboration", "practiceTarget": 3},
+            {"title": "Delivering under pressure", "practiceTarget": 3}
+          ]
+        },
+        {
+          "id": "principal_topics",
+          "name": "Principal-Level Topics",
+          "weight": 9,
+          "isCritical": true,
+          "items": [
+            {"title": "Architecture decision & tradeoffs", "practiceTarget": 2},
+            {"title": "Team scaling & hiring", "practiceTarget": 2},
+            {"title": "Technical vision & roadmap", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "company_research",
+          "name": "Company Research",
+          "weight": 6,
+          "isCritical": false,
+          "items": [
+            {"title": "Target company values & culture", "practiceTarget": 3},
+            {"title": "Recent product/tech news", "practiceTarget": 3},
+            {"title": "Questions to ask interviewer", "practiceTarget": 5}
+          ]
+        }
+      ]
+    }
+  ]
+}
