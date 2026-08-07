@@ -1,79 +1,33 @@
 {
   "topics": {
-    "trees_graphs": {
-      "overview": "Trees & Graphs are the highest-weight DSA area for Principal interviews. Master traversals first, then graph patterns (BFS/DFS, topo sort, shortest path).",
-      "cards": [
-        {
-          "id": "tg_bfs_dfs",
-          "type": "pattern",
-          "title": "Graph BFS vs DFS \u2014 When to Use",
-          "body": "**BFS** \u2192 shortest path in unweighted graphs, level-order, spreading infection.\n\n**DFS** \u2192 path existence, cycle detection, connected components, backtracking on graphs.\n\n**Memory anchor:** BFS uses a **queue** (layer by layer). DFS uses a **stack/recursion** (go deep first).",
-          "linkedItems": [
-            "Graph BFS/DFS"
-          ],
-          "readMinutes": 4
-        },
-        {
-          "id": "tg_traversals",
-          "type": "concept",
-          "title": "Tree Traversals (Iterative + Recursive)",
-          "body": "**Inorder** (LNR): BST \u2192 sorted order.\n**Preorder** (NLR): copy tree, prefix expressions.\n**Postorder** (LRN): delete tree, postfix.\n\nIterative inorder: stack + go left, pop, go right.\n\nInterview tip: always state time **O(n)** and space **O(h)** for recursion.",
-          "linkedItems": [
-            "Binary tree traversals"
-          ],
-          "readMinutes": 5
-        },
-        {
-          "id": "tg_topo",
-          "type": "problem",
-          "title": "Topological Sort & Cycle Detection",
-          "body": "**Kahn's (BFS):** in-degree count \u2192 queue nodes with 0 in-degree \u2192 reduce neighbors.\n**DFS:** mark visiting/visited; back-edge to visiting node = cycle.\n\nUse for: course schedule, build order, dependency resolution.",
-          "linkedItems": [
-            "Topological sort"
-          ],
-          "readMinutes": 4
-        },
-        {
-          "id": "tg_dijkstra",
-          "type": "cheat",
-          "title": "Shortest Path Quick Ref",
-          "body": "| Algorithm | Use when |\n|---|---|\n| BFS | Unweighted shortest path |\n| Dijkstra | Non-negative weights |\n| Bellman-Ford | Negative edges OK |\n| Union-Find | Connected components |",
-          "linkedItems": [
-            "Shortest path",
-            "Union-Find"
-          ],
-          "readMinutes": 3
-        }
-      ]
-    },
     "arrays_strings": {
-      "overview": "Arrays & Strings power 40%+ of screening rounds. Two pointers, sliding window, prefix sums, and hash maps are your core toolkit.",
+      "overview": "Arrays & Strings power 40%+ of screening rounds. Master two pointers, sliding window, prefix sums, and hash maps first \u2014 they unlock most easy-medium problems.",
       "cards": [
         {
           "id": "as_two_ptr",
           "type": "pattern",
-          "title": "Two Pointers Pattern",
-          "body": "**Sorted array pair sum** \u2192 left/right pointers move inward.\n**Palindrome** \u2192 skip non-alphanumeric, compare ends.\n**3Sum** \u2192 fix one element, two-pointer on remainder.\n\nSignal: sorted input or 'find pair/triplet'.",
+          "title": "Two Pointers \u2014 Full Guide",
+          "body": "**When:** sorted array, pair/triplet sum, palindrome, container area.\n\n**Template:** left=0, right=n-1; move based on comparison to target.\n\n**3Sum:** sort \u2192 fix i \u2192 two-pointer on [i+1..n-1]; skip duplicates.\n\n**Memory:** *Sorted + pair = squeeze from both ends.*",
           "linkedItems": [
             "Two pointers"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
         },
         {
           "id": "as_sliding",
           "type": "pattern",
-          "title": "Sliding Window",
-          "body": "Maintain a window [start, end] that satisfies a condition.\n\n**Fixed window:** max sum of size k.\n**Variable window:** longest substring without repeat \u2014 shrink when duplicate seen.\n\nTemplate: expand right, while invalid shrink left.",
+          "title": "Sliding Window \u2014 Variable & Fixed",
+          "body": "**Invariant:** window always valid (or track invalid count).\n\n1. Expand `end`\n2. While invalid \u2192 shrink `start`\n3. Update answer when valid\n\n**Fixed k:** sum first k, slide by add right / remove left.\n\n**Trap:** updating max before shrinking when problem requires valid window only.",
           "linkedItems": [
             "sliding window"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
         },
         {
           "id": "as_kadane",
           "type": "problem",
-          "title": "Kadane's \u2014 Maximum Subarray",
-          "body": "At each element: **start fresh or extend?**\n`currentSum = max(num, currentSum + num)`\n\n**Hiking trail analogy:** drop negative baggage, restart from here.\n\nTime O(n), Space O(1).",
+          "title": "Kadane's Maximum Subarray",
+          "body": "At each index: **start fresh or extend?**\n`cur = max(nums[i], cur + nums[i])`\n\n**Hiking trail:** negative cumulative baggage \u2192 drop it.\n\nFollow-up: return actual subarray \u2192 track tempStart/start/end.\n\nTime O(n), Space O(1).",
           "linkedItems": [
             "Kadane"
           ],
@@ -83,32 +37,127 @@
           "id": "as_prefix",
           "type": "pattern",
           "title": "Prefix Sum + HashMap",
-          "body": "Subarray sum = K \u2192 track running prefix sums.\nIdentity: `sum(i..j) = prefix[j] - prefix[i-1]`\n\nInitialize map with `{0: 1}` for empty prefix.",
+          "body": "Identity: `sum(i..j) = prefix[j] - prefix[i-1]`\n\nSeeking subarray sum = K \u2192 at each prefix `p`, count how many prior prefixes equal `p - K`.\n\n**Seed `{0:1}`** \u2014 empty prefix enables subarray starting at 0.\n\n**Active recall:** Why seed 0? \u2192 subarrays from index 0.",
           "linkedItems": [
             "Prefix sums"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "as_hash_freq",
+          "type": "pattern",
+          "title": "HashMap Frequency Patterns",
+          "body": "Anagrams: count chars, compare maps or single map with +/-.\nTop-K frequent: heap or bucket sort by frequency.\n\n**Mnemonic:** *Count \u2192 Compare \u2192 Combine*",
+          "linkedItems": [
+            "Hash map frequency"
+          ],
+          "readMinutes": 4
+        },
+        {
+          "id": "as_diff_arr",
+          "type": "concept",
+          "title": "Difference Arrays",
+          "body": "Range update [l,r] += val in O(1): `diff[l]+=val`, `diff[r+1]-=val`. Prefix sum diff \u2192 final array.\n\nUse when many range increments on static base.",
+          "linkedItems": [
+            "difference arrays"
+          ],
+          "readMinutes": 4
+        }
+      ]
+    },
+    "trees_graphs": {
+      "overview": "Highest-weight DSA area. Order: traversals \u2192 BST \u2192 BFS/DFS \u2192 topo \u2192 Union-Find \u2192 shortest path.",
+      "cards": [
+        {
+          "id": "tg_traversals",
+          "type": "concept",
+          "title": "Tree Traversals Deep Dive",
+          "body": "**Inorder (LNR):** BST \u2192 sorted order.\n**Preorder (NLR):** serialize/copy tree.\n**Postorder (LRN):** delete tree, evaluate expressions.\n\nIterative inorder: stack, go left, pop, go right.\n\nSpace O(h) recursion, O(n) worst skewed tree.",
+          "linkedItems": [
+            "Binary tree traversals"
+          ],
+          "readMinutes": 6
+        },
+        {
+          "id": "tg_bst",
+          "type": "concept",
+          "title": "BST Operations & Validation",
+          "body": "Search/insert/delete O(h). Balanced \u2192 O(log n).\n\nValidate BST: pass (min,max) range per node \u2014 not just left<root<right locally.\n\n**Recall:** Why range check? \u2192 local check misses cross-subtree violations.",
+          "linkedItems": [
+            "BST"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "tg_bfs_dfs",
+          "type": "pattern",
+          "title": "BFS vs DFS \u2014 Decision Tree",
+          "body": "**BFS:** unweighted shortest path, level-order, multi-source spread.\n**DFS:** connectivity, cycles, topo sort, path enumeration.\n\n**Mnemonic:** *Breadth = shortest steps, Depth = explore fully.*",
+          "linkedItems": [
+            "Graph BFS/DFS"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "tg_topo",
+          "type": "problem",
+          "title": "Topological Sort & Cycle Detection",
+          "body": "**Kahn (BFS):** in-degree 0 queue \u2192 reduce neighbors.\n**DFS:** visiting/visited; edge to visiting = cycle.\n\nApps: build order, course schedule, dependency DAG.",
+          "linkedItems": [
+            "Topological sort"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "tg_uf",
+          "type": "concept",
+          "title": "Union-Find (DSU)",
+          "body": "**FIND** root with path compression.\n**UNION** by rank/size.\n\nNearly O(1) amortized.\n\n**Triggers:** connected components, redundant edge, accounts merge, Kruskal MST.\n\n**Mnemonic:** FURC \u2014 Find, Union, Rank, Compress.",
+          "linkedItems": [
+            "Union-Find"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "tg_shortest",
+          "type": "cheat",
+          "title": "Shortest Path Algorithms",
+          "body": "| Algo | When |\n|---|---|\n| BFS | Unweighted |\n| Dijkstra | Non-negative weights |\n| Bellman-Ford | Negative edges, detect cycle |\n| Floyd-Warshall | All pairs (small n) |\n\n**Recall:** Why Dijkstra fails with negative edge? \u2192 greedy assumption broken.",
+          "linkedItems": [
+            "Shortest path"
           ],
           "readMinutes": 4
         }
       ]
     },
     "dp": {
-      "overview": "DP = optimal substructure + overlapping subproblems. Start with 1D, graduate to 2D and state machines.",
+      "overview": "DP = optimal substructure + overlapping subproblems. Define state before transitions.",
       "cards": [
         {
-          "id": "dp_1d",
-          "type": "concept",
-          "title": "1D DP Patterns",
-          "body": "**Climbing stairs / Fibonacci:** `dp[i] = dp[i-1] + dp[i-2]`\n**House robber:** `dp[i] = max(dp[i-1], dp[i-2] + nums[i])`\n\nOptimize space to O(1) with two variables when only last 2 states matter.",
+          "id": "dp_intro",
+          "type": "framework",
+          "title": "DP Problem-Solving Framework",
+          "body": "1. Define state (what does `dp[i]` mean?)\n2. Write recurrence\n3. Base cases\n4. Order of computation\n5. Space optimize if only prior row/states needed\n\n**Feynman:** Explain Fibonacci DP to a junior without saying 'memoization' first.",
           "linkedItems": [
             "1D DP"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
+        },
+        {
+          "id": "dp_1d",
+          "type": "concept",
+          "title": "1D DP \u2014 Climbing Stairs & House Robber",
+          "body": "Stairs: `dp[i]=dp[i-1]+dp[i-2]` \u2192 optimize to two vars.\n\nRobber: `dp[i]=max(dp[i-1], nums[i]+dp[i-2])` \u2014 can't take adjacent.\n\n**Mnemonic:** SKIP or TAKE-SKIP-ONE.",
+          "linkedItems": [
+            "1D DP"
+          ],
+          "readMinutes": 5
         },
         {
           "id": "dp_2d",
           "type": "concept",
-          "title": "2D DP \u2014 Grid & LCS",
-          "body": "**Grid paths:** `dp[r][c] = dp[r-1][c] + dp[r][c-1]`\n**LCS:** if match \u2192 diagonal+1, else max(up, left).\n\nDraw the table in interviews \u2014 it buys thinking time.",
+          "title": "2D DP \u2014 Grid Paths & LCS",
+          "body": "Grid: `dp[r][c]=dp[r-1][c]+dp[r][c-1]` with obstacles.\nLCS: match \u2192 diag+1; else max(up,left).\n\nDraw table in interview \u2014 buys thinking time.",
           "linkedItems": [
             "2D DP"
           ],
@@ -117,64 +166,141 @@
         {
           "id": "dp_knapsack",
           "type": "pattern",
-          "title": "Knapsack Variants",
-          "body": "**0/1 Knapsack:** iterate capacity backwards to avoid reuse.\n**Unbounded:** iterate forwards (reuse allowed).\n**Subset sum:** special case of 0/1.",
+          "title": "Knapsack Family",
+          "body": "**0/1:** loop capacity backwards (each item once).\n**Unbounded:** loop forwards (reuse allowed).\n**Subset sum:** can we reach target T?\n\n**Recall:** Why backwards for 0/1? \u2192 prevents using same item twice in one pass.",
           "linkedItems": [
             "Knapsack"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
+        },
+        {
+          "id": "dp_state",
+          "type": "concept",
+          "title": "State Machine DP",
+          "body": "When behavior depends on mode: hold/sold/cooldown, buy/sell with fee.\n\nSteps: list modes \u2192 transitions \u2192 DP over (index, mode).\n\nClassic: Best Time to Buy/Sell Stock with cooldown.\n\n**Principal:** State machine DP is how you extend greedy stock problems.",
+          "linkedItems": [
+            "State machine DP"
+          ],
+          "readMinutes": 6
         }
       ]
     },
     "heaps": {
-      "overview": "Heaps solve 'K largest/smallest' and streaming median problems in O(n log k).",
+      "overview": "Heaps = O(log n) insert/extract for streaming and Top-K.",
       "cards": [
         {
           "id": "hp_topk",
           "type": "pattern",
           "title": "Top-K Elements",
-          "body": "Use **min-heap of size K** for K largest (root = smallest of top K).\nUse **max-heap** for K smallest.\n\nTime: O(n log k) \u2014 better than full sort O(n log n) when k << n.",
+          "body": "K **largest** \u2192 min-heap size K (root = weakest winner).\nK **smallest** \u2192 max-heap size K.\n\nTime O(n log k) vs sort O(n log n).",
           "linkedItems": [
             "Top-K"
           ],
-          "readMinutes": 3
+          "readMinutes": 4
         },
         {
           "id": "hp_mergek",
           "type": "problem",
           "title": "Merge K Sorted Lists",
-          "body": "Push head of each list into min-heap. Pop smallest, push its next node.\n\nAlternative: divide-and-conquer merge pairs.",
+          "body": "Min-heap of list heads; pop smallest, push next from that list.\nAlt: divide-and-conquer merge pairs.",
           "linkedItems": [
             "Merge K"
+          ],
+          "readMinutes": 4
+        },
+        {
+          "id": "hp_median",
+          "type": "problem",
+          "title": "Median from Data Stream",
+          "body": "Max-heap (lower half) + min-heap (upper half). Keep sizes balanced (diff \u2264 1).\n\nMedian = top of max-heap or average of both tops.",
+          "linkedItems": [
+            "Median from data stream"
+          ],
+          "readMinutes": 5
+        }
+      ]
+    },
+    "bit_manipulation": {
+      "overview": "Lower frequency but fast wins. XOR and bitmasks.",
+      "cards": [
+        {
+          "id": "bit_xor",
+          "type": "concept",
+          "title": "XOR & Bit Counting",
+          "body": "`a^a=0`, `a^0=a` \u2192 single number among pairs.\nBrian Kernighan: `n&(n-1)` clears lowest set bit.\n\nBitmask DP: iterate subsets of mask.",
+          "linkedItems": [
+            "XOR",
+            "Bitmask"
           ],
           "readMinutes": 4
         }
       ]
     },
-    "bit_manipulation": {
-      "overview": "Bit tricks appear less often but are fast wins when they do \u2014 XOR for pairs, masks for subsets.",
+    "oop_solid": {
+      "overview": "SOLID + composition is the LLD backbone. Principal bar = explain Liskov failures.",
       "cards": [
         {
-          "id": "bit_xor",
-          "type": "concept",
-          "title": "XOR Tricks",
-          "body": "`a ^ a = 0`, `a ^ 0 = a` \u2192 find single number in pairs.\n**Brian Kernighan:** `n & (n-1)` clears lowest set bit \u2014 count bits.\n\nBitmask DP: iterate subsets of mask.",
+          "id": "solid_framework",
+          "type": "framework",
+          "title": "LLD Interview Framework (9 Steps)",
+          "body": "1. **CLARIFY** scope\n2. **NOUNS** \u2192 entities\n3. **VERBS** \u2192 methods\n4. **RELATIONSHIPS** is-a vs has-a\n5. **PATTERNS** from requirements\n6. **SKELETON** interfaces first\n7. **CODE** narrate aloud\n8. **TEST** happy + edge + transitions\n9. **EXTEND** what changes if requirement shifts",
           "linkedItems": [
-            "XOR",
-            "Bitmask"
+            "SOLID"
           ],
-          "readMinutes": 3
+          "readMinutes": 5
+        },
+        {
+          "id": "solid_deep",
+          "type": "concept",
+          "title": "SOLID \u2014 Principal Depth",
+          "body": "**S:** one reason to change (billing vs email).\n**O:** extend via new classes.\n**L:** subclass substitutable \u2014 Square/Rectangle fail.\n**I:** small interfaces, no fat contracts.\n**D:** depend on abstractions; Spring DI.\n\n**Feynman:** Explain Liskov using Square extends Rectangle.",
+          "linkedItems": [
+            "SOLID principles"
+          ],
+          "readMinutes": 6
+        },
+        {
+          "id": "solid_comp",
+          "type": "concept",
+          "title": "Composition Over Inheritance",
+          "body": "Wrong: `GoldMember extends Member` \u2014 tier can't change at runtime.\nRight: `Member has-a Membership has-a Plan`.\n\nRule: inheritance only if is-a is fixed for object's lifetime.",
+          "linkedItems": [
+            "Composition"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "solid_isg",
+          "type": "concept",
+          "title": "Interface Segregation in Practice",
+          "body": "Split `Worker` into `Workable`, `Eatable` \u2014 Robot implements only Workable.\nFat interface \u2192 empty methods \u2192 hidden coupling.",
+          "linkedItems": [
+            "Interface segregation"
+          ],
+          "readMinutes": 4
         }
       ]
     },
     "design_patterns": {
-      "overview": "Patterns emerge from requirements \u2014 never force them. Name the pattern out loud in LLD interviews.",
+      "overview": "Name patterns from requirements, never force them.",
       "cards": [
+        {
+          "id": "pat_triggers",
+          "type": "cheat",
+          "title": "Pattern Trigger Table",
+          "body": "| Signal | Pattern |\n|---|---|\n| Behavior varies by type | Strategy |\n| Create by input type | Factory |\n| One instance | Singleton (prefer DI) |\n| Notify many on event | Observer |\n| Lifecycle stages | State |\n| Stack optional features | Decorator |\n| Mismatched API | Adapter |\n| Many optional ctor params | Builder |",
+          "linkedItems": [
+            "Strategy",
+            "Factory",
+            "Observer"
+          ],
+          "readMinutes": 5
+        },
         {
           "id": "dp_strategy",
           "type": "pattern",
           "title": "Strategy Pattern",
-          "body": "Behavior varies by type \u2192 encapsulate algorithms behind interface.\n**Gym example:** SilverPlan, GoldPlan each implement `getMonthlyFee()`.\n\nTrigger: 'different pricing/perks per tier'.",
+          "body": "Encapsulate varying algorithm. Gym: `MembershipPlan.getMonthlyFee()` per tier.\nAdding tier = new class, zero edits to billing loop.",
           "linkedItems": [
             "Strategy"
           ],
@@ -184,99 +310,85 @@
           "id": "dp_factory",
           "type": "pattern",
           "title": "Factory Pattern",
-          "body": "Centralize object creation based on input type.\n`MembershipPlanFactory.create(Tier.GOLD)` \u2014 adding new tier = one new class.",
+          "body": "Centralize creation: `PlanFactory.create(Tier.GOLD)`.\nHides concrete types from callers.",
           "linkedItems": [
             "Factory"
           ],
-          "readMinutes": 3
+          "readMinutes": 4
         },
         {
           "id": "dp_observer",
           "type": "pattern",
           "title": "Observer Pattern",
-          "body": "One-to-many notification on state change.\nMembership expires \u2192 notify billing, email, analytics.",
+          "body": "Subject notifies observers on state change. Membership expiry \u2192 billing, email, analytics.",
           "linkedItems": [
             "Observer"
-          ],
-          "readMinutes": 3
-        },
-        {
-          "id": "dp_singleton",
-          "type": "cheat",
-          "title": "Singleton Pitfalls",
-          "body": "Thread-safe options: enum singleton, static holder, or synchronized lazy init.\n**Avoid** in tests \u2014 prefer DI instead.\n\nKarat tip: mention when you'd use DI over Singleton.",
-          "linkedItems": [
-            "Singleton"
-          ],
-          "readMinutes": 3
-        }
-      ]
-    },
-    "oop_solid": {
-      "overview": "SOLID + composition over inheritance is the backbone of every LLD round.",
-      "cards": [
-        {
-          "id": "solid_framework",
-          "type": "framework",
-          "title": "LLD Interview Framework (9 Steps)",
-          "body": "1. **CLARIFY** \u2014 never assume scope\n2. **IDENTIFY NOUNS** \u2192 classes\n3. **IDENTIFY VERBS** \u2192 methods\n4. **RELATIONSHIPS** \u2014 is-a vs has-a\n5. **PATTERNS** \u2014 emerge from requirements\n6. **SKELETON** \u2014 interfaces first\n7. **CODE** \u2014 narrate while typing\n8. **TEST** \u2014 happy + edge cases\n9. **EXTEND** \u2014 'if X changed, I'd touch Y'",
-          "linkedItems": [
-            "SOLID"
-          ],
-          "readMinutes": 5
-        },
-        {
-          "id": "solid_s",
-          "type": "concept",
-          "title": "SOLID One-Liners",
-          "body": "**S** \u2014 one class, one reason to change\n**O** \u2014 extend via new classes, don't edit old ones\n**L** \u2014 subclasses honor parent contract\n**I** \u2014 small focused interfaces\n**D** \u2014 depend on abstractions (Spring DI!)",
-          "linkedItems": [
-            "SOLID principles"
           ],
           "readMinutes": 4
         },
         {
-          "id": "solid_comp",
-          "type": "concept",
-          "title": "Composition Over Inheritance",
-          "body": "**Wrong:** `GoldMember extends Member` \u2014 can't change tier at runtime.\n**Right:** `Member has-a Membership has-a Plan` \u2014 upgrade = swap plan.\n\nRule: inheritance only when relationship is fixed for object's lifetime.",
+          "id": "dp_decorator",
+          "type": "pattern",
+          "title": "Decorator vs Adapter",
+          "body": "**Decorator:** add behavior, same interface (logging around PaymentService).\n**Adapter:** translate incompatible interface (LegacyGateway \u2192 PaymentGateway).\n\n**Mnemonic:** Adapter=Translate, Decorator=Stack.",
           "linkedItems": [
-            "Composition"
+            "Decorator",
+            "Adapter"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "dp_singleton",
+          "type": "cheat",
+          "title": "Singleton \u2014 Principal Stance",
+          "body": "Thread-safe: enum singleton, holder idiom.\n**Interview answer:** prefer DI; singleton hurts testing and multi-tenant isolation.",
+          "linkedItems": [
+            "Singleton"
           ],
           "readMinutes": 4
         }
       ]
     },
     "classic_lld": {
-      "overview": "Classic LLD problems repeat across companies. Learn the entity model + patterns for each.",
+      "overview": "Entity model + invariants + patterns. Clarify before coding.",
       "cards": [
         {
           "id": "lld_parking",
           "type": "framework",
-          "title": "Parking Lot \u2014 Entity Model",
-          "body": "**Entities:** ParkingLot, Floor, Spot (type: compact/large/handicapped), Vehicle, Ticket.\n**Patterns:** Factory for spot assignment, Strategy for pricing by vehicle type.\n**Key:** Spot is-a or has-a type; Vehicle parks in compatible spot.",
+          "title": "Parking Lot \u2014 Full Model",
+          "body": "**Entities:** ParkingLot, Floor, SpotType, Spot, Vehicle, Ticket, Payment.\n**Flows:** enter \u2192 assign spot \u2192 ticket; exit \u2192 pay \u2192 free spot.\n**Patterns:** Strategy (pricing), Factory (spot assignment).\n**Concurrency:** lock spot row / optimistic version on allocate.",
           "linkedItems": [
             "Parking Lot"
           ],
-          "readMinutes": 5
+          "readMinutes": 6
         },
         {
           "id": "lld_elevator",
           "type": "framework",
           "title": "Elevator System",
-          "body": "**Entities:** Building, Elevator, Request (floor, direction), Controller.\n**Patterns:** State (idle/moving/door open), Strategy (SCAN vs FCFS dispatch).\n**Concurrency:** queue requests, one elevator handles one direction sweep.",
+          "body": "**Entities:** Building, Elevator, Request(floor, direction), Controller.\n**State:** Idle, MovingUp, MovingDown, DoorOpen.\n**Dispatch:** SCAN vs nearest-car.\n**Concurrency:** request queue per elevator.",
           "linkedItems": [
             "Elevator"
           ],
-          "readMinutes": 5
+          "readMinutes": 6
         },
         {
-          "id": "lld_lru",
-          "type": "problem",
-          "title": "LRU Cache \u2014 Karat Mini Build",
-          "body": "```java\n// LinkedHashMap access-order + removeEldestEntry\nmap = new LinkedHashMap<>(cap, 0.75f, true) {\n  protected boolean removeEldestEntry(Entry e) {\n    return size() > capacity;\n  }\n};\n```\nSay out loud: O(1) get/put via access-order LinkedHashMap.",
+          "id": "lld_bookmyshow",
+          "type": "framework",
+          "title": "BookMyShow / Seat Booking",
+          "body": "**Entities:** Movie, Show, Screen, Seat, Booking, Payment.\n**Critical:** seat hold with TTL \u2192 payment \u2192 confirm.\n**Consistency:** pessimistic row lock OR Redis hold key OR conditional update.\n**Failure:** double-book if no hold TTL or idempotent confirm.",
           "linkedItems": [
-            "Cache (LRU"
+            "BookMyShow"
+          ],
+          "readMinutes": 6
+        },
+        {
+          "id": "lld_vending",
+          "type": "framework",
+          "title": "Vending Machine",
+          "body": "**State pattern:** Idle \u2192 HasMoney \u2192 Dispensing \u2192 Idle.\n**Entities:** Inventory, CoinStore, ProductSlot.\n**Edge:** insufficient change, empty slot, cancel \u2192 refund.",
+          "linkedItems": [
+            "Vending Machine"
           ],
           "readMinutes": 5
         },
@@ -284,32 +396,42 @@
           "id": "lld_splitwise",
           "type": "framework",
           "title": "Splitwise / Expense Sharing",
-          "body": "**Entities:** User, Group, Expense, Split (equal/exact/percentage).\n**Key:** minimize transactions via debt simplification (graph / greedy).\n**Pattern:** Strategy for split types.",
+          "body": "**Entities:** User, Group, Expense, SplitStrategy (equal/exact/%).\n**Graph:** balances between users; simplify debts (min cash flow).\n**Pattern:** Strategy for split types.",
           "linkedItems": [
             "Splitwise"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
+        },
+        {
+          "id": "lld_lru",
+          "type": "problem",
+          "title": "LRU / LFU Cache",
+          "body": "**LRU:** HashMap + doubly linked list OR access-order LinkedHashMap.\n**LFU:** freq buckets + doubly linked lists.\n\nSay O(1) get/put. Distributed follow-up: eviction broadcast, TTL, near-cache.",
+          "linkedItems": [
+            "Cache (LRU"
+          ],
+          "readMinutes": 6
         }
       ]
     },
     "concurrency_lld": {
-      "overview": "Concurrency in LLD: thread-safe collections, producer-consumer, rate limiting.",
+      "overview": "Thread-safety, backpressure, rate limits \u2014 common in Principal LLD.",
       "cards": [
         {
           "id": "conc_rate",
           "type": "problem",
           "title": "Rate Limiter \u2014 Token Bucket",
-          "body": "Refill tokens over time; `tryAcquire()` decrements if available.\nSynchronize `tryAcquire` for thread safety.\n\nDistributed follow-up: Redis + Lua script for atomic decrement.",
+          "body": "Refill tokens at rate r; capacity B allows bursts.\n`tryAcquire()` synchronized for single JVM.\n\n**Distributed:** Redis + Lua atomic script.\n**Algorithms:** token bucket, sliding window log, sliding counter (approx).",
           "linkedItems": [
             "Rate limiter"
           ],
-          "readMinutes": 4
+          "readMinutes": 6
         },
         {
           "id": "conc_pc",
           "type": "pattern",
           "title": "Producer-Consumer",
-          "body": "BlockingQueue decouples producer and consumer.\n`put()` blocks when full; `take()` blocks when empty.\n\nAlternative: wait/notify with bounded buffer.",
+          "body": "`BlockingQueue`: put blocks when full, take when empty.\nDecouples producer rate from consumer.\n\nBackpressure = bounded queue.",
           "linkedItems": [
             "Producer-Consumer"
           ],
@@ -319,263 +441,423 @@
           "id": "conc_chm",
           "type": "cheat",
           "title": "Concurrent Collections",
-          "body": "Default to `ConcurrentHashMap` over synchronized HashMap.\n`CopyOnWriteArrayList` for read-heavy, rare writes.\n`ArrayDeque` preferred over Stack/LinkedList for stack/queue.",
+          "body": "Default `ConcurrentHashMap` over synchronized HashMap.\n`CopyOnWriteArrayList` for read-heavy.\n`ArrayDeque` for stack/queue \u2014 not LinkedList.",
           "linkedItems": [
             "Thread-safe"
           ],
-          "readMinutes": 3
+          "readMinutes": 4
         }
       ]
     },
     "fundamentals": {
-      "overview": "System design fundamentals: CAP, caching, load balancing, DB scaling.",
+      "overview": "CAP/PACELC, caching, LB, DB scaling \u2014 foundation for every HLD.",
       "cards": [
         {
-          "id": "sd_cap",
+          "id": "sd_pacelc",
           "type": "concept",
-          "title": "CAP Theorem",
-          "body": "Pick 2 of 3: **Consistency**, **Availability**, **Partition tolerance**.\nIn practice P is unavoidable \u2192 choose CP (banking) vs AP (social feeds).\n\nMention consistency models: strong, eventual, causal.",
+          "title": "CAP & PACELC",
+          "body": "**CAP:** under Partition, choose Availability or Consistency.\n**PACELC:** else (normal ops), choose Latency or Consistency.\n\nBanking \u2192 CP. Social likes \u2192 AP.\n\n**Consistency models:** strong, causal, eventual \u2014 name them in interviews.",
           "linkedItems": [
             "CAP theorem"
           ],
-          "readMinutes": 4
+          "readMinutes": 6
         },
         {
           "id": "sd_cache",
           "type": "pattern",
-          "title": "Caching Layers",
-          "body": "**CDN** \u2014 static assets at edge.\n**Redis** \u2014 hot data, sessions, rate limits.\n**Cache-aside:** app reads cache \u2192 miss \u2192 DB \u2192 populate.\n**Write-through:** write cache + DB together.",
+          "title": "Caching \u2014 Patterns & Failures",
+          "body": "| Pattern | Pros | Failure |\n|---|---|---|\n| Cache-aside | Simple | Stampede on hot key |\n| Write-through | Consistent cache | Write latency |\n| Write-behind | Fast writes | Loss on crash |\n\nMitigate stampede: singleflight, soft+hard TTL, jitter.",
           "linkedItems": [
             "Caching"
           ],
-          "readMinutes": 4
+          "readMinutes": 6
         },
         {
           "id": "sd_lb",
           "type": "concept",
           "title": "Load Balancing",
-          "body": "L4 (TCP) vs L7 (HTTP) balancing.\nAlgorithms: round-robin, least connections, consistent hashing (for caches).",
+          "body": "L4 (TCP/NLB) vs L7 (HTTP/ALB).\nAlgos: round-robin, least connections, consistent hashing (caches).\n\nSticky sessions \u2014 avoid if possible; externalize session to Redis.",
           "linkedItems": [
             "Load balancing"
           ],
-          "readMinutes": 3
+          "readMinutes": 4
+        },
+        {
+          "id": "sd_shard",
+          "type": "concept",
+          "title": "Sharding & Replication",
+          "body": "Shard key dominates \u2014 hot partition = bottleneck.\nReplication: leader-follower for reads; quorum for writes.\n\n**Principal line:** shard by tenant_id for isolation, user_id for even load.",
+          "linkedItems": [
+            "Database sharding"
+          ],
+          "readMinutes": 6
         }
       ]
     },
     "messaging": {
-      "overview": "Kafka and event-driven architecture are Principal-level must-knows.",
+      "overview": "Kafka + delivery semantics + outbox \u2014 Principal must-know.",
       "cards": [
         {
           "id": "msg_kafka",
           "type": "concept",
           "title": "Kafka Internals",
-          "body": "**Topic** \u2192 **Partitions** (parallelism) \u2192 **Offsets** (per consumer).\nConsumer groups: each partition consumed by one consumer in group.\nRetention: time or size based.",
+          "body": "Topic \u2192 partitions (parallelism unit) \u2192 offsets.\nOrdering **within** partition only. Key = partition routing.\nConsumer group: 1 consumer per partition max.\n\nLag = consumer SLO metric.",
           "linkedItems": [
             "Kafka"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
         },
         {
           "id": "msg_delivery",
           "type": "concept",
           "title": "Delivery Semantics",
-          "body": "**At-most-once:** fire and forget.\n**At-least-once:** retry + dedup (idempotency keys).\n**Exactly-once:** transactional producer + idempotent consumer (hard, expensive).",
+          "body": "**At-most-once:** commit offset before process.\n**At-least-once:** process then commit; need idempotency.\n**Exactly-once:** transactional + idempotent sink (expensive).\n\n**Mnemonic:** AMAL \u2014 At-most, At-least, idempotent for At-least.",
           "linkedItems": [
             "Exactly-once"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
+        },
+        {
+          "id": "msg_outbox",
+          "type": "pattern",
+          "title": "Outbox Pattern & DLQ",
+          "body": "**Outbox:** same DB txn writes business row + outbox event; relay publishes.\n**DLQ:** poison messages after N retries.\n**Compaction:** Kafka keeps latest value per key.",
+          "linkedItems": [
+            "Event-driven"
+          ],
+          "readMinutes": 6
         }
       ]
     },
     "classic_hld": {
-      "overview": "Classic HLD: URL shortener, feed, chat, video \u2014 know the data model and scaling bottlenecks.",
+      "overview": "Classic designs \u2014 always include capacity math and failure modes.",
       "cards": [
         {
           "id": "hld_url",
           "type": "framework",
           "title": "URL Shortener",
-          "body": "**Write path:** hash \u2192 base62 encode \u2192 store mapping.\n**Read path:** redirect via cache (Redis) \u2192 DB fallback.\n**Scale:** read-heavy \u2192 cache + CDN; shard by hash prefix.",
+          "body": "Write: hash \u2192 base62 \u2192 store (user_id, long_url).\nRead: cache (Redis) \u2192 DB. 301 vs 302.\nScale: read-heavy; CDN; shard by hash prefix.\n\nCapacity: 62^7 \u2248 3.5T URLs.",
           "linkedItems": [
             "URL Shortener"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
         },
         {
           "id": "hld_feed",
           "type": "framework",
           "title": "News Feed / Timeline",
-          "body": "**Fan-out on write** (push) vs **fan-out on read** (pull).\nHybrid: push for celebrities, pull for normal users.\n**Storage:** user timeline = sorted post IDs.",
+          "body": "**Push:** fanout on write (good for few followers).\n**Pull:** fanout on read (good for many followers).\n**Hybrid:** push celebrities, pull normal users.\n\nStorage: per-user timeline = sorted post IDs.",
           "linkedItems": [
             "feed"
           ],
-          "readMinutes": 4
+          "readMinutes": 6
         },
         {
           "id": "hld_chat",
           "type": "framework",
           "title": "Chat System",
-          "body": "**WebSocket** for real-time; **message queue** for persistence.\n**Online presence:** heartbeat + Redis set.\n**Ordering:** per-conversation sequence numbers.",
+          "body": "WebSocket gateway; message queue for persistence.\nPer-conversation sequence for ordering.\nPresence: heartbeat + Redis set.\nOffline: store-and-forward, sync on reconnect.",
           "linkedItems": [
             "Chat"
           ],
-          "readMinutes": 5
+          "readMinutes": 6
+        },
+        {
+          "id": "hld_video",
+          "type": "framework",
+          "title": "Video Streaming (YouTube)",
+          "body": "Upload \u2192 transcode ladder (HLS/DASH) \u2192 S3 \u2192 CDN.\nMetadata DB separate from blob store.\nABR: client picks bitrate by bandwidth.\n\n**Bottlenecks:** egress cost, transcode farm, hot viral video.",
+          "linkedItems": [
+            "Video streaming"
+          ],
+          "readMinutes": 7
+        },
+        {
+          "id": "hld_rate_dist",
+          "type": "framework",
+          "title": "Distributed Rate Limiter",
+          "body": "Gateway (API GW) or sidecar (Envoy) or Redis cluster.\nSliding window counter in Redis (INCR + EXPIRE).\n\nTradeoff: accuracy vs memory vs cross-region sync.",
+          "linkedItems": [
+            "Rate limiter (distributed)"
+          ],
+          "readMinutes": 6
         }
       ]
     },
     "scalability": {
-      "overview": "Scaling patterns: horizontal vs vertical, microservices tradeoffs, resilience.",
+      "overview": "Resilience patterns and service topology tradeoffs.",
       "cards": [
         {
           "id": "scale_hv",
           "type": "concept",
           "title": "Horizontal vs Vertical",
-          "body": "**Vertical:** bigger machine \u2014 simple but ceiling.\n**Horizontal:** more machines \u2014 needs load balancing, stateless services, shared storage.",
+          "body": "Vertical: bigger box, ceiling fast.\nHorizontal: more nodes \u2014 needs stateless app, LB, external state.\n\nStateless + external session = scale app tier linearly.",
           "linkedItems": [
             "Horizontal"
           ],
-          "readMinutes": 3
+          "readMinutes": 4
+        },
+        {
+          "id": "scale_micro",
+          "type": "concept",
+          "title": "Microservices vs Monolith",
+          "body": "Start modular monolith unless team/deploy independence forces split.\nMicroservices cost: network, observability, distributed transactions.\n\n**Principal:** justify split with organizational or scale constraint.",
+          "linkedItems": [
+            "Microservices"
+          ],
+          "readMinutes": 5
         },
         {
           "id": "scale_cb",
           "type": "pattern",
           "title": "Circuit Breaker & Bulkhead",
-          "body": "**Circuit breaker:** stop calling failing service (closed \u2192 open \u2192 half-open).\n**Bulkhead:** isolate thread pools so one failure doesn't cascade.",
+          "body": "CB: Closed \u2192 Open (fail fast) \u2192 Half-open (probe).\nBulkhead: separate thread pools per dependency.\n\nPrevents cascade when dependency slow/failing.",
           "linkedItems": [
             "Circuit breaker"
           ],
-          "readMinutes": 3
+          "readMinutes": 5
         }
       ]
     },
     "jvm": {
-      "overview": "JVM internals for senior Java interviews \u2014 memory model, GC, JIT.",
+      "overview": "JVM memory, GC, JIT \u2014 senior Java screens.",
       "cards": [
         {
           "id": "jvm_mem",
           "type": "concept",
           "title": "JVM Memory Model",
-          "body": "**Heap:** objects (young gen: Eden/S0/S1, old gen).\n**Stack:** frames, local vars per thread.\n**Metaspace:** class metadata (post Java 8).",
+          "body": "**Heap:** Eden \u2192 Survivor \u2192 Old gen.\n**Stack:** per-thread frames.\n**Metaspace:** class metadata (Java 8+).\n\nShort-lived objects die in young GC (generational hypothesis).",
           "linkedItems": [
             "Memory model"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
         },
         {
           "id": "jvm_gc",
           "type": "concept",
           "title": "GC Algorithms",
-          "body": "**G1:** default, region-based, predictable pauses.\n**ZGC/Shenandoah:** sub-ms pauses, large heaps.\n\nKnow: minor GC (young), major GC (old), stop-the-world.",
+          "body": "**G1:** region-based, pause targets.\n**ZGC/Shenandoah:** sub-ms pauses, large heaps.\n\nMinor GC (young), Major GC (old), STW events.\n\n**Recall:** Why first request after deploy slow? \u2192 cold JIT + caches.",
           "linkedItems": [
             "GC algorithms"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "jvm_jit",
+          "type": "concept",
+          "title": "JIT Compilation",
+          "body": "Interpreted \u2192 C1 (quick) \u2192 C2 (aggressive opt) for hot methods.\nDeoptimization if assumptions break.\n\n`-XX:+PrintCompilation` for debugging (mention awareness).",
+          "linkedItems": [
+            "JIT compilation"
           ],
           "readMinutes": 4
         }
       ]
     },
     "spring": {
-      "overview": "Spring Boot essentials for full-stack Karat and onsite rounds.",
+      "overview": "Spring Boot DI, transactions, auto-config \u2014 full-stack screens.",
       "cards": [
+        {
+          "id": "sp_auto",
+          "type": "concept",
+          "title": "Auto-Configuration",
+          "body": "Classpath + `@ConditionalOn*` wires defaults.\nOverride with explicit `@Bean`.\n\n`spring.factories` / `AutoConfiguration.imports` register auto-config classes.",
+          "linkedItems": [
+            "auto-configuration"
+          ],
+          "readMinutes": 4
+        },
         {
           "id": "sp_di",
           "type": "concept",
-          "title": "Dependency Injection",
-          "body": "Spring IoC container manages bean lifecycle.\n**Constructor injection** preferred (immutable, testable).\n`@Autowired` on constructor \u2014 dependencies explicit.",
+          "title": "Bean Lifecycle & DI",
+          "body": "Constructor injection preferred (immutable, testable).\nScopes: singleton (default), prototype, request, session.\n\nCircular deps: redesign or `@Lazy` (smell).",
           "linkedItems": [
             "Bean lifecycle"
           ],
-          "readMinutes": 3
+          "readMinutes": 5
         },
         {
           "id": "sp_tx",
           "type": "concept",
-          "title": "Transaction Management",
-          "body": "`@Transactional` \u2014 proxy wraps method in DB transaction.\nRollback on RuntimeException by default.\nPropagation: REQUIRED (default), REQUIRES_NEW, NESTED.",
+          "title": "Transaction Management Traps",
+          "body": "`@Transactional` via proxy \u2014 self-invocation bypasses it.\nRollback: RuntimeException yes, checked no (by default).\n\n`REQUIRES_NEW` for independent side-effect txn.\n\nEmit events? \u2192 outbox, not naive afterCommit only.",
           "linkedItems": [
             "Transaction"
           ],
-          "readMinutes": 3
+          "readMinutes": 6
         }
       ]
     },
     "distributed": {
-      "overview": "Distributed systems: consensus, locking, idempotency.",
+      "overview": "Consensus, locks, idempotency \u2014 Principal differentiator.",
       "cards": [
         {
-          "id": "dist_consensus",
+          "id": "dist_raft",
           "type": "concept",
-          "title": "Consensus (Raft Overview)",
-          "body": "Leader election \u2192 log replication \u2192 commit when majority acks.\nUsed in: etcd, Consul. Simpler mental model than Paxos.",
+          "title": "Raft Consensus",
+          "body": "Leader election \u2192 log replication \u2192 commit on majority.\nState machine applies committed entries.\n\nUsed: etcd, Consul. Simpler mental model than Paxos.",
           "linkedItems": [
             "Consensus"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
+        },
+        {
+          "id": "dist_lock",
+          "type": "concept",
+          "title": "Distributed Locks & Fencing",
+          "body": "Redis `SET NX PX` alone is insufficient.\nProblem: lock holder GC-pauses past TTL \u2192 two holders.\n\n**Fencing token:** monotonic token per lock; storage rejects stale writes.\n\nPrefer etcd/ZooKeeper lease or DB lease with fencing.",
+          "linkedItems": [
+            "Distributed locking"
+          ],
+          "readMinutes": 7
         },
         {
           "id": "dist_idem",
           "type": "pattern",
           "title": "Idempotency Patterns",
-          "body": "Idempotency key per request \u2192 store result in Redis.\nDuplicate request returns cached response.\nCritical for payments and message consumers.",
+          "body": "Client idempotency key \u2192 store response in Redis/DB.\nConsumer: dedupe table by event_id.\n\nGoal: exactly-once **effect** without exactly-once delivery.",
           "linkedItems": [
             "Idempotency"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
+        }
+      ]
+    },
+    "aws_platform": {
+      "overview": "Map abstract HLD to AWS \u2014 your stack (Java/Spring on AWS). Principal interviews expect named services after the design.",
+      "cards": [
+        {
+          "id": "aws_map",
+          "type": "cheat",
+          "title": "AWS Service Mapping for HLD",
+          "body": "| Need | AWS Service |\n|---|---|\n| L7 load balance | ALB |\n| Async buffer | SQS |\n| Pub/sub fan-out | SNS |\n| Event routing | EventBridge |\n| Hot cache / sessions | ElastiCache Redis |\n| Object/video storage | S3 + CloudFront |\n| Key-value at scale | DynamoDB |\n| Relational | RDS/Aurora |\n| Serverless compute | Lambda |\n| Containers | ECS/EKS |\n| API edge | API Gateway |",
+          "linkedItems": [],
+          "readMinutes": 6
+        },
+        {
+          "id": "aws_loose",
+          "type": "concept",
+          "title": "Loosely Coupled AWS Design",
+          "body": "Stateless compute (ECS/Lambda) + external state (DynamoDB, Redis, S3).\nSQS decouples spikes. SNS/EventBridge for fan-out.\n\nFailure isolation: one slow queue consumer doesn't block API.",
+          "linkedItems": [],
+          "readMinutes": 5
+        },
+        {
+          "id": "aws_dynamo",
+          "type": "concept",
+          "title": "DynamoDB Design Notes",
+          "body": "Partition key = scalability unit. Avoid hot keys.\nOn-demand vs provisioned. GSIs for alternate access patterns.\nStreams + Lambda for CDC.",
+          "linkedItems": [],
+          "readMinutes": 5
         }
       ]
     },
     "star_stories": {
-      "overview": "STAR format for behavioral rounds. Prepare 5 stories you can adapt.",
+      "overview": "5 STAR stories \u22642 min each with technical depth and metrics.",
       "cards": [
         {
           "id": "star_format",
           "type": "framework",
-          "title": "STAR Framework",
-          "body": "**S**ituation \u2014 1 sentence context\n**T**ask \u2014 your specific responsibility\n**A**ction \u2014 what YOU did (use 'I', not 'we')\n**R**esult \u2014 quantified outcome\n\nKeep each story to 2 minutes. Principal stories need technical depth.",
+          "title": "STAR for Principal",
+          "body": "**S** 1 sentence context\n**T** your ownership scope\n**A** technical decisions YOU made\n**R** quantified outcome\n\nPrincipal: Action must show tradeoff analysis + influence without authority.",
           "linkedItems": [
             "Conflict",
             "leadership",
             "Failure"
           ],
-          "readMinutes": 4
+          "readMinutes": 5
         },
         {
           "id": "star_conflict",
           "type": "concept",
           "title": "Conflict Resolution Story",
-          "body": "Pick a real disagreement on technical approach.\nShow: listened first, data-driven decision, outcome for team.\nAvoid: blaming others or 'I was right'.",
+          "body": "Technical disagreement \u2192 data/metrics \u2192 prototype or spike \u2192 decision.\nAvoid blame. Show listening.",
           "linkedItems": [
             "Conflict resolution"
           ],
-          "readMinutes": 3
-        }
-      ]
-    },
-    "principal_topics": {
-      "overview": "Principal-level: architecture decisions, team scaling, technical vision.",
-      "cards": [
+          "readMinutes": 4
+        },
         {
-          "id": "prin_trade",
-          "type": "framework",
-          "title": "Architecture Decision Framework",
-          "body": "1. Context & constraints\n2. Options considered (at least 2)\n3. Tradeoffs table\n4. Decision + rationale\n5. Revisit criteria\n\nDocument as ADR (Architecture Decision Record).",
+          "id": "star_failure",
+          "type": "concept",
+          "title": "Failure & Learning Story",
+          "body": "Own the miss. What signal you missed. Process change after.\nPrincipal: systemic fix, not heroics.",
           "linkedItems": [
-            "Architecture decision"
+            "Failure"
+          ],
+          "readMinutes": 4
+        },
+        {
+          "id": "star_pressure",
+          "type": "concept",
+          "title": "Delivering Under Pressure",
+          "body": "Scope cut, risk communication, incremental ship.\nMetrics: uptime, latency, revenue protected.",
+          "linkedItems": [
+            "Delivering under pressure"
           ],
           "readMinutes": 4
         }
       ]
     },
+    "principal_topics": {
+      "overview": "ADR, hiring, tech vision \u2014 Staff/Principal loop differentiators.",
+      "cards": [
+        {
+          "id": "prin_adr",
+          "type": "framework",
+          "title": "Architecture Decision Record (ADR)",
+          "body": "1. Context & constraints\n2. Options (\u22652)\n3. Tradeoffs table\n4. Decision + rationale\n5. Consequences\n6. Revisit triggers\n\n**Drill:** Write one real ADR from memory weekly.",
+          "linkedItems": [
+            "Architecture decision"
+          ],
+          "readMinutes": 6
+        },
+        {
+          "id": "prin_hiring",
+          "type": "concept",
+          "title": "Team Scaling & Hiring",
+          "body": "Define interview signal per level. Bar-raiser mindset.\nOnboarding: ownership boundaries, first 30/60/90.\n\n**Recall:** What distinguishes Staff from Senior in your rubric?",
+          "linkedItems": [
+            "Team scaling"
+          ],
+          "readMinutes": 5
+        },
+        {
+          "id": "prin_vision",
+          "type": "framework",
+          "title": "Technical Vision & Roadmap",
+          "body": "Current state \u2192 constraints \u2192 12-month bets \u2192 risks \u2192 metrics.\nTie to business outcome, not technology for its own sake.",
+          "linkedItems": [
+            "Technical vision"
+          ],
+          "readMinutes": 5
+        }
+      ]
+    },
     "company_research": {
-      "overview": "Research target company before interviews \u2014 shows genuine interest.",
+      "overview": "Company-specific prep for Tier-2 loops.",
       "cards": [
         {
           "id": "co_questions",
           "type": "cheat",
-          "title": "Questions to Ask Interviewer",
-          "body": "- What does success look like in first 90 days?\n- Biggest technical challenge the team faces?\n- How are architecture decisions made?\n- Engineering culture around on-call and quality?",
+          "title": "Questions to Ask Principal Interviewer",
+          "body": "- Success in first 90 days at this level?\n- Biggest platform/architecture pain?\n- How are ADRs / tech strategy decided?\n- On-call model and quality bar?\n- What does 'Principal impact' look like here?",
           "linkedItems": [
             "Questions to ask"
           ],
-          "readMinutes": 3
+          "readMinutes": 4
+        },
+        {
+          "id": "co_research",
+          "type": "concept",
+          "title": "Company Research Checklist",
+          "body": "Recent earnings/blog engineering posts. Product bets. Competitors.\nMap your stories to their domain (fintech, ads, logistics, etc.).",
+          "linkedItems": [
+            "Target company",
+            "Recent product"
+          ],
+          "readMinutes": 4
         }
       ]
     }
@@ -586,49 +868,63 @@
       "title": "Karat Communication Script",
       "tag": "Karat",
       "readMinutes": 4,
-      "body": "For every problem:\n1. **Restate** in your own words\n2. **Clarify** edge cases\n3. **State brute force** first\n4. **State optimization** before coding\n5. **Narrate** while typing\n6. **State complexity** unprompted\n7. **Test** with sample input\n\nNarrated partial completion beats silent rushed completion."
+      "body": "1. Restate 2. Clarify 3. Brute force aloud 4. State optimization 5. Narrate while coding 6. Complexity unprompted 7. Test sample input\n\nNarrated partial > silent perfect."
     },
     {
       "id": "ml_extension",
       "title": "Extension Question Chains",
       "tag": "Karat",
       "readMinutes": 3,
-      "body": "Karat's signature: solve Part 1, then interviewer extends.\n\nExamples:\n- Two Sum \u2192 sorted array \u2192 3Sum\n- Rate limiter \u2192 distributed Redis\n- LRU cache \u2192 implement without LinkedHashMap\n\nBudget time: working Part 1 + attempted Part 2 > perfect Part 1 alone."
+      "body": "Part 1 working + Part 2 attempted > polished Part 1 only.\nTwo Sum \u2192 3Sum \u2192 k Sum. LRU \u2192 thread-safe \u2192 distributed."
     },
     {
       "id": "ml_pattern_trig",
       "title": "DSA Pattern Triggers",
       "tag": "DSA",
       "readMinutes": 3,
-      "body": "| Signal | Technique |\n|---|---|\n| Sorted + O(log n) | Binary Search |\n| Pair/triplet sum | Two Pointers / HashMap |\n| Subarray condition | Sliding Window |\n| Frequency count | HashMap |\n| K largest | Min-Heap size K |\n| All combinations | Backtracking |"
+      "body": "Sorted+O(log n)\u2192Binary Search\nPair sum\u2192Two Ptr/HashMap\nSubarray\u2192Sliding Window\nK largest\u2192Min-heap size K\nIntervals\u2192Sort+Greedy\nCycle\u2192DFS/Floyd"
+    },
+    {
+      "id": "ml_pacelc",
+      "title": "PACELC Mnemonic",
+      "tag": "System Design",
+      "readMinutes": 2,
+      "body": "If **P**artition: **A** or **C**.\n**E**lse: **L**atency or **C**onsistency.\nBanking\u2192CP. Social\u2192AP."
+    },
+    {
+      "id": "ml_feynman",
+      "title": "Feynman Technique",
+      "tag": "Retention",
+      "readMinutes": 2,
+      "body": "Explain topic to a junior in plain language. Stalls = gaps to study. Record 3-min voice note after each HLD topic."
+    },
+    {
+      "id": "ml_active",
+      "title": "Active Recall Rule",
+      "tag": "Retention",
+      "readMinutes": 2,
+      "body": "Never re-read notes first. Question on card \u2192 answer from memory \u2192 check. Failed? Mark Needs Revision in app."
     },
     {
       "id": "ml_lld_recover",
-      "title": "Stuck in LLD? Recovery Script",
+      "title": "LLD Recovery Script",
       "tag": "LLD",
       "readMinutes": 2,
-      "body": "Never go silent >10 seconds.\n\nSay: 'Let me think through entities first...'\nSketch nouns on paper.\nPick the simplest pattern that fits.\n'If I had more time, I'd add X.'\n\nInterviewers grade thinking process, not just code."
+      "body": "Never silent >10s. 'Let me list entities...' Sketch nouns. Simplest pattern. 'With more time I'd add X.'"
     },
     {
-      "id": "ml_java_eq",
-      "title": "equals() + hashCode() Contract",
-      "tag": "Java",
+      "id": "ml_fencing",
+      "title": "Fencing Token Recall",
+      "tag": "Distributed",
       "readMinutes": 2,
-      "body": "Equal objects MUST have same hashCode.\nOverride both together or HashMap lookups break silently.\nUse same fields in both methods.\n\nKarat pick-2-of-5 favorite question."
+      "body": "Lock TTL + GC pause = two holders. Fencing token: storage rejects writes with stale token. Always mention in distributed lock answers."
     },
     {
-      "id": "ml_compose",
-      "title": "Composition Over Inheritance",
-      "tag": "LLD",
+      "id": "ml_daily",
+      "title": "90-Day Daily Rhythm",
+      "tag": "Plan",
       "readMinutes": 2,
-      "body": "Member has-a Membership has-a Plan.\nNOT GoldMember extends Member.\n\nUpgrade tier = swap plan reference.\nThis is the #1 mistake in gym membership LLD interviews."
-    },
-    {
-      "id": "ml_streak",
-      "title": "Daily Study Habit",
-      "tag": "Motivation",
-      "readMinutes": 1,
-      "body": "15 minutes daily beats 3-hour weekend cramming.\nToday's Focus = forward motion.\nToday's Revision = retention.\nMicro-lesson = one new insight.\n\nYou're building interview muscle memory."
+      "body": "Mon DSA \u00b7 Tue LLD \u00b7 Wed DSA timed \u00b7 Thu HLD \u00b7 Fri LLD/behavioral \u00b7 Sat mock \u00b7 Sun revision+plan.\nUse Today Focus + Revision every day."
     }
   ]
 }

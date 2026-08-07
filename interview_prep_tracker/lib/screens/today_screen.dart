@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 
 import '../providers/providers.dart';
+import '../theme/app_theme.dart';
 import '../widgets/phase_card.dart';
 import '../widgets/focus_and_status.dart';
 import '../widgets/study_widgets.dart';
@@ -18,6 +19,7 @@ class TodayScreen extends ConsumerWidget {
     final focusAsync = ref.watch(todayFocusProvider);
     final revisionAsync = ref.watch(todayRevisionProvider);
     final microLesson = ref.watch(microLessonProvider);
+    final planAsync = ref.watch(planProgressProvider);
 
     return progressAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -44,7 +46,60 @@ class TodayScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
               OverallProgressHeader(progress: progress, streak: streak),
-              const SizedBox(height: 20),
+              const SizedBox(height: 16),
+              planAsync.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+                data: (planProgress) {
+                  if (planProgress.week == null) return const SizedBox.shrink();
+                  return Card(
+                    child: InkWell(
+                      onTap: () {},
+                      borderRadius: BorderRadius.circular(16),
+                      child: Padding(
+                        padding: const EdgeInsets.all(14),
+                        child: Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withValues(alpha: 0.06),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Text(
+                                'W${planProgress.currentWeek}',
+                                style: const TextStyle(fontWeight: FontWeight.w700, color: AppTheme.accent),
+                              ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    planProgress.week!.title,
+                                    style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+                                  ),
+                                  if (planProgress.todayRhythm != null)
+                                    Text(
+                                      '${planProgress.todayRhythm!.primary} · ${planProgress.todayRhythm!.secondary}',
+                                      style: TextStyle(color: Colors.white.withValues(alpha: 0.45), fontSize: 11),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            Text(
+                              'Day ${planProgress.currentDay}/90',
+                              style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 11),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+              const SizedBox(height: 12),
               focusAsync.when(
                 loading: () => const SizedBox.shrink(),
                 error: (_, __) => const SizedBox.shrink(),

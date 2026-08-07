@@ -4,8 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/providers.dart';
 import '../services/notification_service.dart';
 import 'phases_screen.dart';
+import 'plan_screen.dart';
 import 'progress_screen.dart';
-import 'review_screen.dart';
 import 'today_screen.dart';
 
 class HomeShell extends ConsumerStatefulWidget {
@@ -49,7 +49,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       const TodayScreen(),
       const PhasesScreen(),
       const ProgressScreen(),
-      const ReviewScreen(),
+      const PlanScreen(),
     ];
 
     return Scaffold(
@@ -74,9 +74,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
             label: 'Progress',
           ),
           NavigationDestination(
-            icon: Icon(Icons.rate_review_outlined),
-            selectedIcon: Icon(Icons.rate_review),
-            label: 'Review',
+            icon: Icon(Icons.map_outlined),
+            selectedIcon: Icon(Icons.map),
+            label: 'Plan',
           ),
         ],
       ),

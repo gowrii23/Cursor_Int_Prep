@@ -1,15 +1,20 @@
 import '../data/database_helper.dart';
 import '../models/models.dart';
+import '../models/plan_models.dart';
 import '../models/study_models.dart';
 import '../services/content_service.dart';
 import '../services/daily_picks_service.dart';
+import '../services/plan_service.dart';
 import '../services/progress_calculator.dart';
 
 class PrepRepository {
-  PrepRepository(this._db) : _dailyPicks = DailyPicksService(_db);
+  PrepRepository(this._db)
+      : _dailyPicks = DailyPicksService(_db),
+        _planService = PlanService(_db);
 
   final DatabaseHelper _db;
   final DailyPicksService _dailyPicks;
+  final PlanService _planService;
 
   Future<void> initialize() async {
     await ContentService.instance.load();
@@ -87,6 +92,14 @@ class PrepRepository {
       _dailyPicks.getDailyRevision(shuffle: shuffle);
 
   MicroLesson? getMicroLesson() => _dailyPicks.getDailyMicroLesson();
+
+  StudyPlan? getStudyPlan() => ContentService.instance.plan;
+
+  List<RecallCard> getRecallCards() => ContentService.instance.recallCards;
+
+  Future<PlanProgress> getPlanProgress() => _planService.getProgress();
+
+  Future<void> resetPlanStartDate() => _planService.resetPlanStartDate();
 
   Future<void> updateItemStatus(int itemId, ItemStatus status) async {
     final item = await _db.getItem(itemId);

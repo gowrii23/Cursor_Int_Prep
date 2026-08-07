@@ -1,0 +1,242 @@
+{
+  "title": "Principal Engineer \u2014 90-Day Roadmap",
+  "profile": "11 YOE \u00b7 Java/Spring/React/Python/AWS \u00b7 Tier-2 Product Companies",
+  "totalDays": 90,
+  "weeks": [
+    {
+      "week": 1,
+      "month": 1,
+      "title": "Arrays, Strings & Heaps",
+      "topics": [
+        "arrays_strings",
+        "heaps"
+      ],
+      "targets": "Two pointers, sliding window, prefix+map, Kadane, Top-K",
+      "retention": "Pattern trigger table daily",
+      "exit": "8+ array mediums clean"
+    },
+    {
+      "week": 2,
+      "month": 1,
+      "title": "Trees & Graphs Core",
+      "topics": [
+        "trees_graphs"
+      ],
+      "targets": "Traversals, BST, BFS/DFS, topo+cycle",
+      "retention": "Feynman: why BFS shortest path?",
+      "exit": "Graph medium in 30 min"
+    },
+    {
+      "week": 3,
+      "month": 1,
+      "title": "Graphs Advanced + Bit",
+      "topics": [
+        "trees_graphs",
+        "bit_manipulation"
+      ],
+      "targets": "Union-Find, Dijkstra/BF, XOR basics",
+      "retention": "FURC mnemonic",
+      "exit": "Union-Find problem clean"
+    },
+    {
+      "week": 4,
+      "month": 1,
+      "title": "DP + LLD OOP/SOLID",
+      "topics": [
+        "dp",
+        "oop_solid",
+        "design_patterns"
+      ],
+      "targets": "1D/2D DP, state machine intro, SOLID, Strategy/Factory",
+      "retention": "Liskov counterexample recall",
+      "exit": "LLD framework from memory"
+    },
+    {
+      "week": 5,
+      "month": 2,
+      "title": "Classic LLD Set A",
+      "topics": [
+        "classic_lld"
+      ],
+      "targets": "Parking, Elevator, LRU, Vending",
+      "retention": "Entity sketch in 10 min each",
+      "exit": "2 LLD mocks scored \u22654/6"
+    },
+    {
+      "week": 6,
+      "month": 2,
+      "title": "Classic LLD B + Concurrency",
+      "topics": [
+        "classic_lld",
+        "concurrency_lld"
+      ],
+      "targets": "BookMyShow, Splitwise, rate limiter, producer-consumer",
+      "retention": "Seat-hold TTL active recall",
+      "exit": "Rate limiter + BookMyShow verbal"
+    },
+    {
+      "week": 7,
+      "month": 2,
+      "title": "SD Fundamentals",
+      "topics": [
+        "fundamentals"
+      ],
+      "targets": "PACELC, caching, LB, sharding",
+      "retention": "Tradeoff cards CP vs AP",
+      "exit": "Cache stampede mitigations listed"
+    },
+    {
+      "week": 8,
+      "month": 2,
+      "title": "Messaging + HLD Classics",
+      "topics": [
+        "messaging",
+        "classic_hld",
+        "aws_platform"
+      ],
+      "targets": "Kafka, outbox, URL shortener, distributed rate limit",
+      "retention": "AMAL delivery mnemonic",
+      "exit": "URL + rate limiter with numbers"
+    },
+    {
+      "week": 9,
+      "month": 3,
+      "title": "HLD Feed, Chat, Video",
+      "topics": [
+        "classic_hld"
+      ],
+      "targets": "Fanout hybrid, WebSocket chat, video pipeline",
+      "retention": "Video pipeline Feynman note",
+      "exit": "Feed design with celebrity case"
+    },
+    {
+      "week": 10,
+      "month": 3,
+      "title": "Distributed + JVM/Spring",
+      "topics": [
+        "distributed",
+        "jvm",
+        "spring"
+      ],
+      "targets": "Raft, fencing, idempotency, GC, @Transactional traps",
+      "retention": "GC pause + lock TTL recall",
+      "exit": "Distributed lock answer complete"
+    },
+    {
+      "week": 11,
+      "month": 3,
+      "title": "Scalability + Principal",
+      "topics": [
+        "scalability",
+        "principal_topics",
+        "star_stories"
+      ],
+      "targets": "Circuit breaker, micro vs mono, ADR, hiring, 5 STAR stories",
+      "retention": "Write 2 ADRs from memory",
+      "exit": "5 stories \u22642 min each"
+    },
+    {
+      "week": 12,
+      "month": 3,
+      "title": "Integration Mocks",
+      "topics": [
+        "dsa",
+        "lld",
+        "system_design",
+        "behavioral"
+      ],
+      "targets": "Alt-day mocks; company research",
+      "retention": "Mock scorecard every session",
+      "exit": "Ready for Tier-2 Principal loop"
+    }
+  ],
+  "dailyRhythm": [
+    {
+      "day": "Monday",
+      "primary": "DSA Focus",
+      "secondary": "Revision card"
+    },
+    {
+      "day": "Tuesday",
+      "primary": "LLD Focus",
+      "secondary": "Pattern triggers"
+    },
+    {
+      "day": "Wednesday",
+      "primary": "DSA timed (2\u00d725m)",
+      "secondary": "Micro-lesson"
+    },
+    {
+      "day": "Thursday",
+      "primary": "HLD / Distributed",
+      "secondary": "Active recall deck"
+    },
+    {
+      "day": "Friday",
+      "primary": "LLD or Behavioral",
+      "secondary": "1 STAR story"
+    },
+    {
+      "day": "Saturday",
+      "primary": "Full mock (HLD or LLD 45-60m)",
+      "secondary": "ADR or Feynman note"
+    },
+    {
+      "day": "Sunday",
+      "primary": "Light revision + company research",
+      "secondary": "Plan next week"
+    }
+  ],
+  "techniques": [
+    {
+      "id": "pattern_trigger",
+      "name": "Pattern Trigger Table",
+      "use": "DSA",
+      "how": "Cover solution; given signal only, name pattern in <5s"
+    },
+    {
+      "id": "feynman",
+      "name": "Feynman Technique",
+      "use": "HLD / Distributed",
+      "how": "3-min voice note explaining without jargon"
+    },
+    {
+      "id": "active_recall",
+      "name": "Active Recall",
+      "use": "Tradeoffs",
+      "how": "Question first, answer from memory, then check card"
+    },
+    {
+      "id": "mnemonic",
+      "name": "Mnemonics",
+      "use": "Constraints",
+      "how": "FURC, AMAL, PACELC, Adapter=Translate"
+    },
+    {
+      "id": "dry_run",
+      "name": "Dry-run Narration",
+      "use": "DSA / LLD",
+      "how": "Trace one example aloud before coding"
+    },
+    {
+      "id": "adr",
+      "name": "Teach-back ADR",
+      "use": "Principal",
+      "how": "Half-page ADR from a real decision weekly"
+    }
+  ],
+  "sessionTemplate": [
+    "0-5 min: Micro-lesson warm-up",
+    "5-50 min: Today's Focus (learn or practice)",
+    "50-70 min: Today's Revision (active recall first)",
+    "70-90 min: Feynman note OR recall deck"
+  ],
+  "mockScorecard": [
+    "Clarifying questions asked",
+    "Constraints & numbers stated",
+    "Correct building blocks",
+    "Bottleneck identified",
+    "\u22653 failure modes",
+    "10\u00d7 evolution answer"
+  ]
+}

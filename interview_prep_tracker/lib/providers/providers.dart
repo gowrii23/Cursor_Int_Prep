@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/database_helper.dart';
 import '../data/prep_repository.dart';
 import '../models/models.dart';
+import '../models/plan_models.dart';
 import '../models/study_models.dart';
 
 final databaseProvider = Provider<DatabaseHelper>((ref) => DatabaseHelper.instance);
@@ -48,6 +49,19 @@ final microLessonProvider = Provider<MicroLesson?>((ref) {
 final topicsNeedingReviewProvider = FutureProvider<List<Topic>>((ref) async {
   ref.watch(refreshProvider);
   return ref.watch(repositoryProvider).getTopicsNeedingReview();
+});
+
+final studyPlanProvider = Provider<StudyPlan?>((ref) {
+  return ref.watch(repositoryProvider).getStudyPlan();
+});
+
+final planProgressProvider = FutureProvider<PlanProgress>((ref) async {
+  ref.watch(refreshProvider);
+  return ref.watch(repositoryProvider).getPlanProgress();
+});
+
+final recallCardsProvider = Provider<List<RecallCard>>((ref) {
+  return ref.watch(repositoryProvider).getRecallCards();
 });
 
 final studyContentProvider = Provider.family<TopicStudyContent?, String>((ref, topicId) {

@@ -212,8 +212,19 @@
           "isCritical": true,
           "items": [
             {"title": "Consensus (Raft/Paxos overview)", "practiceTarget": 2},
-            {"title": "Distributed locking", "practiceTarget": 2},
+            {"title": "Distributed locking & fencing tokens", "practiceTarget": 3},
             {"title": "Idempotency patterns", "practiceTarget": 2}
+          ]
+        },
+        {
+          "id": "aws_platform",
+          "name": "AWS Platform",
+          "weight": 8,
+          "isCritical": true,
+          "items": [
+            {"title": "ALB, SQS, SNS, EventBridge mapping", "practiceTarget": 2},
+            {"title": "DynamoDB partition key design", "practiceTarget": 2},
+            {"title": "S3 + CloudFront + ElastiCache patterns", "practiceTarget": 2}
           ]
         }
       ]

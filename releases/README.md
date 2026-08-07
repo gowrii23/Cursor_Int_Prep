@@ -4,21 +4,22 @@
 
 | File | Size | Description |
 |------|------|-------------|
-| [prep-learner-v2.0.0-arm64.apk](./prep-learner-v2.0.0-arm64.apk) | ~19 MB | **Learner edition** — study content, daily focus, revision, micro-lessons |
-| [prep-tracker-v1.0.0-arm64.apk](./prep-tracker-v1.0.0-arm64.apk) | ~19 MB | Original tracker-only build |
+| [prep-learner-v2.1.0-arm64.apk](./prep-learner-v2.1.0-arm64.apk) | ~20 MB | **Latest** — 90-day Principal plan, 76 study cards, active recall deck |
+| [prep-learner-v2.0.0-arm64.apk](./prep-learner-v2.0.0-arm64.apk) | ~19 MB | Learner edition (study + focus + revision) |
 
 ### Install steps
 
-1. Download `prep-learner-v2.0.0-arm64.apk` to your phone (GitHub mobile → tap file → Download, or use the raw link below).
+1. Download `prep-learner-v2.1.0-arm64.apk` to your phone.
 2. **Settings → Security & privacy → Install unknown apps** → enable for your browser or file manager.
 3. Open the downloaded APK and tap **Install**.
-4. Allow **notifications** when prompted (daily prep reminder at 9 PM).
+4. Allow **notifications** when prompted (daily prep reminder).
 
-### Direct download link (v2.0.0 Learner)
+### Direct download link (v2.1.0)
 
-`https://github.com/gowrii23/Cursor_Int_Prep/raw/cursor/full-learner-app-b9e6/releases/prep-learner-v2.0.0-arm64.apk`
+`https://github.com/gowrii23/Cursor_Int_Prep/raw/main/releases/prep-learner-v2.1.0-arm64.apk`
 
 ### Version history
 
-- **v2.0.0 Learner** — Study cards per topic (Learn tab), daily-stable focus, smart revision shuffle, micro-lessons, Karat/DSA/LLD content baked in
-- **v1.0.0** — MVP: phases, weighted progress, streaks, confidence, daily reminders
+- **v2.1.0** — 90-day Principal roadmap (Plan tab), 76 expanded study cards, 15 active-recall cards, AWS platform topic, retention techniques, weekly targets
+- **v2.0.0** — Study cards per topic, daily focus/revision, Learn/Practice/Track tabs
+- **v1.0.0** — Tracker MVP

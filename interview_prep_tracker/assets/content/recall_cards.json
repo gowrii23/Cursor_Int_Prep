@@ -1,0 +1,109 @@
+{
+  "cards": [
+    {
+      "id": "r_cap",
+      "topicId": "fundamentals",
+      "question": "Under partition, what does CAP force you to choose?",
+      "answer": "Availability OR Consistency (P is unavoidable in distributed systems).",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_pacelc",
+      "topicId": "fundamentals",
+      "question": "What does PACELC add beyond CAP?",
+      "answer": "When no partition: trade Latency vs Consistency.",
+      "technique": "mnemonic"
+    },
+    {
+      "id": "r_kadane",
+      "topicId": "arrays_strings",
+      "question": "Kadane's one-line recurrence?",
+      "answer": "cur = max(nums[i], cur + nums[i]) \u2014 start fresh or extend.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_bfs",
+      "topicId": "trees_graphs",
+      "question": "Why BFS for unweighted shortest path?",
+      "answer": "First time you reach a node is minimum edge count.",
+      "technique": "feynman"
+    },
+    {
+      "id": "r_dijkstra",
+      "topicId": "trees_graphs",
+      "question": "Why does Dijkstra fail with negative edges?",
+      "answer": "Greedy extract-min assumes non-negative \u2014 negative edge can create shorter path later.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_knapsack",
+      "topicId": "dp",
+      "question": "Why iterate capacity backwards in 0/1 knapsack?",
+      "answer": "So each item is used at most once in the inner loop.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_liskov",
+      "topicId": "oop_solid",
+      "question": "Give a classic Liskov violation.",
+      "answer": "Square extends Rectangle \u2014 setWidth breaks area invariant.",
+      "technique": "feynman"
+    },
+    {
+      "id": "r_decorator",
+      "topicId": "design_patterns",
+      "question": "Decorator vs Adapter in one line?",
+      "answer": "Decorator stacks behavior (same interface); Adapter translates incompatible interface.",
+      "technique": "mnemonic"
+    },
+    {
+      "id": "r_seat",
+      "topicId": "classic_lld",
+      "question": "How prevent double-booking in BookMyShow?",
+      "answer": "Seat hold with TTL + conditional confirm OR row lock OR optimistic version.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_kafka_order",
+      "topicId": "messaging",
+      "question": "Kafka ordering guarantee scope?",
+      "answer": "Only within a single partition.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_atleast",
+      "topicId": "messaging",
+      "question": "At-least-once delivery requires what from consumers?",
+      "answer": "Idempotent processing or deduplication.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_feed",
+      "topicId": "classic_hld",
+      "question": "Celebrity fanout problem \u2014 push or pull?",
+      "answer": "Pull or hybrid \u2014 push doesn't scale for millions of followers.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_fencing",
+      "topicId": "distributed",
+      "question": "What problem do fencing tokens solve?",
+      "answer": "Stale lock holder writing after TTL expired and new holder acquired lock.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_tx",
+      "topicId": "spring",
+      "question": "Why doesn't @Transactional work on self-invocation?",
+      "answer": "Spring AOP proxy is bypassed on internal calls within same class.",
+      "technique": "active_recall"
+    },
+    {
+      "id": "r_aws_async",
+      "topicId": "aws_platform",
+      "question": "AWS service for decoupling producer from consumer spikes?",
+      "answer": "SQS (buffer); SNS for fan-out; EventBridge for routing.",
+      "technique": "active_recall"
+    }
+  ]
+}
