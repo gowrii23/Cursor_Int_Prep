@@ -29,9 +29,13 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final repo = ref.read(repositoryProvider);
     final hour = await repo.getReminderHour();
     final focus = await repo.getTodayFocus();
-    final body = focus != null
-        ? "Today's focus: ${focus.item.title}"
-        : 'Time for your daily interview prep session!';
+    final revision = await repo.getTodayRevision();
+    var body = 'Time for your daily interview prep session!';
+    if (focus != null) {
+      body = "Today's focus: ${focus.item.title}";
+    } else if (revision != null) {
+      body = "Today's revision: ${revision.item?.title ?? revision.topic.name}";
+    }
     await NotificationService.instance.scheduleDailyReminder(
       hour: hour,
       minute: 0,

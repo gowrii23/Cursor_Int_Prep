@@ -27,7 +27,7 @@ class PrepTrackerApp extends ConsumerWidget {
     final init = ref.watch(initProvider);
 
     return MaterialApp(
-      title: 'Prep Tracker',
+      title: 'Prep Learner',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.dark(),
       home: init.when(

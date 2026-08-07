@@ -1,7 +1,7 @@
 name: interview_prep_tracker
-description: Interview prep tracker with hierarchical skill tree, streaks, and weighted progress.
+description: Interview prep learner — study content, daily focus, revision, and progress tracking.
 publish_to: 'none'
-version: 1.0.0+1
+version: 2.0.0+2
 
 environment:
   sdk: ^3.12.2
@@ -20,6 +20,7 @@ dependencies:
   google_fonts: ^6.2.1
   flutter_animate: ^4.5.2
   shared_preferences: ^2.5.3
+  flutter_markdown: ^0.7.7+1
 
 dev_dependencies:
   flutter_test:
@@ -30,3 +31,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/seed/checklist.json
+    - assets/content/study_content.json

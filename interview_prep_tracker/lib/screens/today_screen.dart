@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 import '../providers/providers.dart';
 import '../widgets/phase_card.dart';
 import '../widgets/focus_and_status.dart';
+import '../widgets/study_widgets.dart';
 import 'topic_detail_screen.dart';
 
 class TodayScreen extends ConsumerWidget {
@@ -14,6 +16,8 @@ class TodayScreen extends ConsumerWidget {
     final progressAsync = ref.watch(overallProgressProvider);
     final streakAsync = ref.watch(streakProvider);
     final focusAsync = ref.watch(todayFocusProvider);
+    final revisionAsync = ref.watch(todayRevisionProvider);
+    final microLesson = ref.watch(microLessonProvider);
 
     return progressAsync.when(
       loading: () => const Center(child: CircularProgressIndicator()),
@@ -35,7 +39,7 @@ class TodayScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Principal-track prep · 90-day journey',
+                'Prep Learner · study, practice, revise',
                 style: TextStyle(color: Colors.white.withValues(alpha: 0.5)),
               ),
               const SizedBox(height: 20),
@@ -57,22 +61,77 @@ class TodayScreen extends ConsumerWidget {
                     focus: focus,
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
-                        builder: (_) => TopicDetailScreen(topicId: focus.topic.id),
+                        builder: (_) => TopicDetailScreen(
+                          topicId: focus.topic.id,
+                          initialTab: 0,
+                          highlightItemId: focus.item.id,
+                        ),
                       ),
                     ),
                   );
                 },
               ),
-              const SizedBox(height: 24),
-              Text(
-                'Quick tip',
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+              const SizedBox(height: 16),
+              revisionAsync.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+                data: (revision) {
+                  if (revision == null) {
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(18),
+                        child: Text(
+                          'No revision due yet — keep learning!',
+                          style: TextStyle(color: Colors.white.withValues(alpha: 0.55)),
+                        ),
+                      ),
+                    );
+                  }
+                  return TodayRevisionCard(
+                    revision: revision,
+                    onShuffle: () async {
+                      await ref.read(repositoryProvider).getTodayRevision(shuffle: true);
+                      refreshData(ref);
+                    },
+                    onOpenTopic: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => TopicDetailScreen(
+                          topicId: revision.topic.id,
+                          initialTab: revision.studyCard != null ? 0 : 1,
+                          highlightItemId: revision.item?.id,
+                        ),
+                      ),
+                    ),
+                    onStudy: () async {
+                      if (revision.studyCard == null) return;
+                      await ref.read(repositoryProvider).markStudiedToday();
+                      refreshData(ref);
+                      if (!context.mounted) return;
+                      await Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (_) => StudyCardReader(card: revision.studyCard!),
+                        ),
+                      );
+                    },
+                  ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.05, end: 0);
+                },
               ),
-              const SizedBox(height: 8),
-              Text(
-                'Weighted progress prioritizes critical topics like Trees & Graphs and LLD patterns over lower-weight areas.',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.55), height: 1.4),
-              ),
+              if (microLesson != null) ...[
+                const SizedBox(height: 16),
+                MicroLessonCard(
+                  lesson: microLesson,
+                  onTap: () async {
+                    await ref.read(repositoryProvider).markStudiedToday();
+                    refreshData(ref);
+                    if (!context.mounted) return;
+                    await Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MicroLessonReader(lesson: microLesson),
+                      ),
+                    );
+                  },
+                ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.05, end: 0),
+              ],
             ],
           ),
         ),

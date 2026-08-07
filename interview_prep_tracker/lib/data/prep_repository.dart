@@ -1,13 +1,18 @@
 import '../data/database_helper.dart';
 import '../models/models.dart';
+import '../models/study_models.dart';
+import '../services/content_service.dart';
+import '../services/daily_picks_service.dart';
 import '../services/progress_calculator.dart';
 
 class PrepRepository {
-  PrepRepository(this._db);
+  PrepRepository(this._db) : _dailyPicks = DailyPicksService(_db);
 
   final DatabaseHelper _db;
+  final DailyPicksService _dailyPicks;
 
   Future<void> initialize() async {
+    await ContentService.instance.load();
     await _db.seedFromAssets();
   }
 
@@ -24,6 +29,9 @@ class PrepRepository {
   Future<List<ChecklistItem>> getAllItems() => _db.getAllItems();
 
   Future<List<Topic>> getAllTopics() => _db.getAllTopics();
+
+  TopicStudyContent? getStudyContent(String topicId) =>
+      ContentService.instance.getTopicContent(topicId);
 
   Future<Map<String, List<ChecklistItem>>> getItemsGroupedByTopic() async {
     final items = await _db.getAllItems();
@@ -66,59 +74,19 @@ class PrepRepository {
 
   Future<void> markPracticedToday() => _db.recordStreakDay();
 
-  Future<TodayFocus?> getTodayFocus() async {
-    final phases = await _db.getPhases();
-    final itemsByTopic = await getItemsGroupedByTopic();
-    TodayFocus? best;
+  Future<void> markStudiedToday() => _db.recordStreakDay();
 
-    for (final phase in phases) {
-      final topics = await _db.getTopicsForPhase(phase.id);
-      for (final topic in topics) {
-        final items = itemsByTopic[topic.id] ?? [];
-        for (final item in items) {
-          if (item.status == ItemStatus.done) continue;
-
-          final priority = _focusPriority(item, topic);
-          if (best == null || priority > _focusPriority(best.item, best.topic)) {
-            best = TodayFocus(
-              item: item,
-              topic: topic,
-              phase: phase,
-              reason: _focusReason(item, topic),
-            );
-          }
-        }
-      }
-    }
-    return best;
+  Future<TodayFocus?> getTodayFocus() {
+    return _dailyPicks.getDailyFocus(() async {
+      final candidates = await _dailyPicks.computeAllFocusCandidates(getItemsGroupedByTopic());
+      return candidates;
+    });
   }
 
-  double _focusPriority(ChecklistItem item, Topic topic) {
-    final statusBoost = item.status == ItemStatus.needsRevision
-        ? 3.0
-        : item.status == ItemStatus.inProgress
-            ? 2.0
-            : 1.0;
-    final criticalBoost = topic.isCritical ? 2.0 : 1.0;
-    final confidencePenalty = (6 - topic.confidence) / 5.0;
-    return topic.weight * statusBoost * criticalBoost * confidencePenalty;
-  }
+  Future<TodayRevision?> getTodayRevision({bool shuffle = false}) =>
+      _dailyPicks.getDailyRevision(shuffle: shuffle);
 
-  String _focusReason(ChecklistItem item, Topic topic) {
-    if (item.status == ItemStatus.needsRevision) {
-      return 'Needs revision — confidence may be fading';
-    }
-    if (topic.isCritical) {
-      return 'Critical for Principal role';
-    }
-    if (topic.confidence <= 2) {
-      return 'Low confidence — prioritize practice';
-    }
-    if (item.status == ItemStatus.inProgress) {
-      return 'Already in progress — finish strong';
-    }
-    return 'Next high-priority item';
-  }
+  MicroLesson? getMicroLesson() => _dailyPicks.getDailyMicroLesson();
 
   Future<void> updateItemStatus(int itemId, ItemStatus status) async {
     final item = await _db.getItem(itemId);
