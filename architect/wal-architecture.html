@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Write-Ahead Log Architecture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column; each mechanism gets one wide figure with a caption, read top to bottom in the order a write happens. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --fg: #1b2230;
+  --muted: #5d6779;
+  --line: #c9cfdb;
+  --mem: #e8eefb;
+  --disk: #eef1f4;
+  --accent: #c2410c;
+  --ok: #15803d;
+  --ok-bg: #e3f4e8;
+  --bad: #b91c1c;
+  --bad-bg: #fbe5e5;
+  --ck-bg: #fdebdc;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --surface: #181d26; --fg: #e4e8ef; --muted: #98a2b3; --line: #3a4352;
+    --mem: #1a2438; --disk: #1d222b; --accent: #fb923c; --ok: #4ade80; --ok-bg: #163322;
+    --bad: #f87171; --bad-bg: #3a1a1c; --ck-bg: #3a2414; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181d26; --fg: #e4e8ef; --muted: #98a2b3; --line: #3a4352;
+  --mem: #1a2438; --disk: #1d222b; --accent: #fb923c; --ok: #4ade80; --ok-bg: #163322;
+  --bad: #f87171; --bad-bg: #3a1a1c; --ck-bg: #3a2414; color-scheme: dark;
+}
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 960px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 48px; }
+header { display: grid; gap: 12px; max-width: 68ch; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--font-display); font-size: clamp(30px, 5vw, 44px); line-height: 1.1; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-size: 24px; line-height: 1.2; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.lede { color: var(--muted); font-size: 17px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 4px; padding: 14px 18px; font-size: 15px; }
+.rule code, p code, li code { font-family: var(--font-mono); font-size: .9em; }
+section { display: grid; gap: 14px; }
+section > p { max-width: 68ch; }
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+svg.d { display: block; width: 100%; min-width: 680px; height: auto; color: var(--fg); }
+figcaption { color: var(--muted); font-size: 14.5px; max-width: 72ch; }
+ol.steps { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 70ch; }
+
+/* SVG styling from page tokens */
+.d text { font-family: var(--font-mono); font-size: 12.5px; fill: var(--fg); }
+.d .t-title { font-family: var(--font-body); font-weight: 600; font-size: 14px; }
+.d .t-sub { fill: var(--muted); font-size: 11.5px; }
+.d .t-zone { fill: var(--muted); font-size: 11px; letter-spacing: .08em; }
+.d .t-acc { fill: var(--accent); font-weight: 500; }
+.d .t-bad { fill: var(--bad); font-weight: 500; }
+.d .box { fill: var(--surface); stroke: var(--fg); stroke-width: 1.4; }
+.d .zone-mem { fill: var(--mem); stroke: none; }
+.d .zone-disk { fill: var(--disk); stroke: none; }
+.d .cell { fill: var(--line); stroke: none; }
+.d .cell-acc { fill: var(--accent); stroke: none; }
+.d .ln { stroke: var(--fg); stroke-width: 1.5; fill: none; }
+.d .ln-acc { stroke: var(--accent); stroke-width: 2.6; fill: none; }
+.d .ln-dash { stroke: var(--fg); stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
+.d .ln-bound { stroke: var(--accent); stroke-width: 1.4; fill: none; stroke-dasharray: 3 4; }
+.d .ln-crash { stroke: var(--bad); stroke-width: 1.6; fill: none; stroke-dasharray: 5 4; }
+.d .rec-t1 { fill: var(--ok-bg); stroke: var(--ok); stroke-width: 1.4; }
+.d .rec-t2 { fill: var(--bad-bg); stroke: var(--bad); stroke-width: 1.4; }
+.d .rec-ck { fill: var(--ck-bg); stroke: var(--accent); stroke-width: 1.4; }
+.d .dot { fill: var(--fg); }
+.d .dot-bad { fill: var(--bad); }
+.mk { fill: var(--fg); }
+.mk-acc { fill: var(--accent); }
+.mk-bad { fill: var(--bad); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="arw-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mk-acc" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="arw-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk-bad" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">System design · storage internals</span>
+    <h1>Write-ahead logging, drawn out</h1>
+    <p class="lede">Four diagrams in the order things happen: a commit, a crash and recovery, SQLite's WAL mode, and the same idea replicated across machines.</p>
+    <p class="rule"><strong>The one rule everything rests on:</strong> a changed data page may reach disk only after the log records describing that change are on disk. In LSN terms: <code>pageLSN ≤ flushedLSN</code> before the page is written.</p>
+  </header>
+
+  <!-- 1. Write path -->
+  <section>
+    <h2>1. What happens on COMMIT</h2>
+    <figure>
+      <div class="scroll">
+        <svg class="d" viewBox="0 0 880 410" role="img" aria-label="Write path: the client's write goes to the WAL buffer and the page in the buffer pool. Only the WAL is fsynced before the commit is acknowledged. Dirty data pages are flushed later at a checkpoint, after which old log can be recycled.">
+          <rect class="zone-mem" x="190" y="40" width="680" height="150" rx="6"/>
+          <text class="t-zone" x="206" y="62">MEMORY · LOST ON CRASH</text>
+          <rect class="zone-disk" x="190" y="240" width="680" height="150" rx="6"/>
+          <text class="t-zone" x="206" y="378">DISK · SURVIVES CRASH</text>
+          <line class="ln-bound" x1="190" y1="215" x2="870" y2="215"/>
+          <text class="t-acc" x="862" y="208" text-anchor="end">durability line</text>
+
+          <rect class="box" x="20" y="95" width="120" height="50" rx="4"/>
+          <text class="t-title" x="80" y="125" text-anchor="middle">Client</text>
+
+          <rect class="box" x="230" y="90" width="170" height="60" rx="4"/>
+          <text class="t-title" x="315" y="115" text-anchor="middle">WAL buffer</text>
+          <text class="t-sub" x="315" y="134" text-anchor="middle">log records, LSN 101…</text>
+
+          <rect class="box" x="590" y="90" width="240" height="60" rx="4"/>
+          <text class="t-title" x="710" y="115" text-anchor="middle">Buffer pool</text>
+          <text class="t-sub" x="710" y="134" text-anchor="middle">dirty pages, each with pageLSN</text>
+
+          <rect class="box" x="230" y="275" width="170" height="60" rx="4"/>
+          <text class="t-title" x="315" y="293" text-anchor="middle">WAL file</text>
+          <rect class="cell" x="242" y="303" width="22" height="22"/>
+          <rect class="cell" x="268" y="303" width="22" height="22"/>
+          <rect class="cell" x="294" y="303" width="22" height="22"/>
+          <rect class="cell" x="320" y="303" width="22" height="22"/>
+          <rect class="cell-acc" x="346" y="303" width="22" height="22"/>
+          <text class="t-sub" x="380" y="319">→</text>
+
+          <rect class="box" x="590" y="275" width="240" height="60" rx="4"/>
+          <text class="t-title" x="710" y="300" text-anchor="middle">Data files</text>
+          <text class="t-sub" x="710" y="319" text-anchor="middle">table + index pages</text>
+
+          <!-- 1 write -->
+          <line class="ln" x1="140" y1="120" x2="228" y2="120" marker-end="url(#arw)"/>
+          <text x="184" y="111" text-anchor="middle">① write</text>
+          <!-- 2 modify page -->
+          <line class="ln" x1="400" y1="120" x2="588" y2="120" marker-end="url(#arw)"/>
+          <text x="494" y="111" text-anchor="middle">② change page in RAM</text>
+          <!-- 3 fsync -->
+          <line class="ln-acc" x1="315" y1="150" x2="315" y2="272" marker-end="url(#arw-acc)"/>
+          <text class="t-acc" x="327" y="178">③ fsync</text>
+          <text class="t-sub" x="327" y="194">sequential append</text>
+          <!-- 4 ack -->
+          <path class="ln-dash" d="M230,320 H60 V147" marker-end="url(#arw)"/>
+          <text x="70" y="246">④ ack</text>
+          <text class="t-sub" x="70" y="262">COMMIT OK</text>
+          <!-- 5 checkpoint flush -->
+          <line class="ln-dash" x1="710" y1="150" x2="710" y2="272" marker-end="url(#arw)"/>
+          <text x="698" y="178" text-anchor="end">⑤ later, at checkpoint</text>
+          <text class="t-sub" x="698" y="194" text-anchor="end">random page writes</text>
+          <!-- 6 recycle -->
+          <line class="ln-dash" x1="590" y1="305" x2="402" y2="305" marker-end="url(#arw)"/>
+          <text x="496" y="296" text-anchor="middle">⑥ log before here</text>
+          <text class="t-sub" x="496" y="325" text-anchor="middle">can be recycled</text>
+        </svg>
+      </div>
+      <figcaption>Only step ③ waits on the disk, and it is a cheap sequential append. The expensive random writes of data pages (⑤) happen in the background. If the machine dies between ④ and ⑤, nothing is lost, because the WAL already holds the change. The orange cell is the commit record.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 2. Recovery -->
+  <section>
+    <h2>2. Crash recovery (ARIES)</h2>
+    <figure>
+      <div class="scroll">
+        <svg class="d" viewBox="0 0 880 340" role="img" aria-label="Recovery timeline over the log. Analysis scans forward from the last checkpoint to find committed and in-flight transactions. Redo replays history from the oldest dirty page. Undo walks backward to roll back the loser transaction T2.">
+          <text class="t-zone" x="40" y="40">WAL ON DISK · LSN →</text>
+
+          <rect class="rec-t1" x="40" y="55" width="85" height="50" rx="3"/>
+          <text x="82.5" y="75" text-anchor="middle">LSN 100</text><text class="t-sub" x="82.5" y="94" text-anchor="middle">T1 BEGIN</text>
+          <rect class="rec-t1" x="133" y="55" width="85" height="50" rx="3"/>
+          <text x="175.5" y="75" text-anchor="middle">101</text><text class="t-sub" x="175.5" y="94" text-anchor="middle">T1 UPD A</text>
+          <rect class="rec-t2" x="226" y="55" width="85" height="50" rx="3"/>
+          <text x="268.5" y="75" text-anchor="middle">102</text><text class="t-sub" x="268.5" y="94" text-anchor="middle">T2 BEGIN</text>
+          <rect class="rec-ck" x="319" y="55" width="85" height="50" rx="3"/>
+          <text x="361.5" y="75" text-anchor="middle">103</text><text class="t-sub" x="361.5" y="94" text-anchor="middle">CHECKPOINT</text>
+          <rect class="rec-t2" x="412" y="55" width="85" height="50" rx="3"/>
+          <text x="454.5" y="75" text-anchor="middle">104</text><text class="t-sub" x="454.5" y="94" text-anchor="middle">T2 UPD B</text>
+          <rect class="rec-t1" x="505" y="55" width="85" height="50" rx="3"/>
+          <text x="547.5" y="75" text-anchor="middle">105</text><text class="t-sub" x="547.5" y="94" text-anchor="middle">T1 UPD C</text>
+          <rect class="rec-t1" x="598" y="55" width="85" height="50" rx="3"/>
+          <text x="640.5" y="75" text-anchor="middle">106</text><text class="t-sub" x="640.5" y="94" text-anchor="middle">T1 COMMIT</text>
+          <rect class="rec-t2" x="691" y="55" width="85" height="50" rx="3"/>
+          <text x="733.5" y="75" text-anchor="middle">107</text><text class="t-sub" x="733.5" y="94" text-anchor="middle">T2 UPD D</text>
+
+          <line class="ln-crash" x1="805" y1="48" x2="805" y2="300"/>
+          <text class="t-bad" x="805" y="40" text-anchor="middle">CRASH</text>
+
+          <!-- Analysis -->
+          <text class="t-title" x="40" y="169">1 Analysis</text>
+          <line class="ln" x1="361.5" y1="165" x2="800" y2="165" marker-end="url(#arw)"/>
+          <circle class="dot" cx="361.5" cy="165" r="3.5"/>
+          <text x="580" y="155" text-anchor="middle">find winners (T1), losers (T2), dirty pages</text>
+
+          <!-- Redo -->
+          <text class="t-title" x="40" y="229">2 Redo</text>
+          <line class="ln" x1="175.5" y1="225" x2="800" y2="225" marker-end="url(#arw)"/>
+          <circle class="dot" cx="175.5" cy="225" r="3.5"/>
+          <circle class="dot" cx="454.5" cy="225" r="3.5"/>
+          <circle class="dot" cx="547.5" cy="225" r="3.5"/>
+          <circle class="dot" cx="733.5" cy="225" r="3.5"/>
+          <text x="488" y="215" text-anchor="middle">repeat ALL history from oldest dirty page, if pageLSN &lt; LSN</text>
+
+          <!-- Undo -->
+          <text class="t-title" x="40" y="289">3 Undo</text>
+          <line class="ln-acc" x1="800" y1="285" x2="272" y2="285" marker-end="url(#arw-bad)" style="stroke: var(--bad)"/>
+          <circle class="dot-bad" cx="733.5" cy="285" r="4"/>
+          <circle class="dot-bad" cx="454.5" cy="285" r="4"/>
+          <text class="t-bad" x="530" y="275" text-anchor="middle">roll back T2 newest → oldest: 107, 104 (write CLRs)</text>
+
+          <!-- legend -->
+          <rect class="rec-t1" x="40" y="315" width="14" height="14" rx="2"/><text class="t-sub" x="60" y="326">committed (T1)</text>
+          <rect class="rec-t2" x="180" y="315" width="14" height="14" rx="2"/><text class="t-sub" x="200" y="326">in flight at crash (T2)</text>
+          <rect class="rec-ck" x="360" y="315" width="14" height="14" rx="2"/><text class="t-sub" x="380" y="326">checkpoint record</text>
+        </svg>
+      </div>
+      <figcaption>Redo replays T2's changes too, then Undo removes them. "Repeat history, then roll back losers" is simpler and safer than trying to redo only the winners. Comparing each page's pageLSN with the record's LSN makes redo idempotent, so a crash during recovery is safe. CLRs (compensation log records) make undo idempotent the same way.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 3. SQLite -->
+  <section>
+    <h2>3. SQLite in WAL mode (what your tracker app uses)</h2>
+    <figure>
+      <div class="scroll">
+        <svg class="d" viewBox="0 0 880 280" role="img" aria-label="SQLite WAL mode: the single writer appends page frames to app.db-wal. Readers read newer pages from the WAL, located through the shm index, and unchanged pages from app.db. A checkpoint copies frames back into app.db.">
+          <rect class="box" x="40" y="30" width="150" height="50" rx="4"/>
+          <text class="t-title" x="115" y="52" text-anchor="middle">Writer</text>
+          <text class="t-sub" x="115" y="69" text-anchor="middle">one at a time</text>
+
+          <rect class="box" x="40" y="138" width="150" height="50" rx="4"/>
+          <text class="t-title" x="115" y="160" text-anchor="middle">Readers</text>
+          <text class="t-sub" x="115" y="177" text-anchor="middle">many, concurrent</text>
+
+          <rect class="box" x="380" y="30" width="220" height="64" rx="4"/>
+          <text class="t-title" x="490" y="52" text-anchor="middle">app.db-wal</text>
+          <rect class="cell" x="392" y="62" width="21" height="22"/>
+          <rect class="cell" x="417" y="62" width="21" height="22"/>
+          <rect class="cell" x="442" y="62" width="21" height="22"/>
+          <rect class="cell-acc" x="467" y="62" width="21" height="22"/>
+          <rect class="cell" x="492" y="62" width="21" height="22"/>
+          <rect class="cell" x="517" y="62" width="21" height="22"/>
+          <rect class="cell" x="542" y="62" width="21" height="22"/>
+          <rect class="cell-acc" x="567" y="62" width="21" height="22"/>
+
+          <rect class="box" x="380" y="196" width="220" height="64" rx="4"/>
+          <text class="t-title" x="490" y="222" text-anchor="middle">app.db</text>
+          <text class="t-sub" x="490" y="242" text-anchor="middle">pages as of last checkpoint</text>
+
+          <line class="ln" x1="190" y1="55" x2="378" y2="55" marker-end="url(#arw)"/>
+          <text x="284" y="46" text-anchor="middle">append page frames</text>
+
+          <line class="ln-dash" x1="190" y1="150" x2="378" y2="92" marker-end="url(#arw)"/>
+          <text x="252" y="152">newer pages, via -shm index</text>
+
+          <line class="ln" x1="190" y1="176" x2="378" y2="214" marker-end="url(#arw)"/>
+          <text x="214" y="232">unchanged pages</text>
+
+          <path class="ln-acc" d="M600,62 H680 V228 H603" marker-end="url(#arw-acc)"/>
+          <text class="t-acc" x="694" y="138">checkpoint</text>
+          <text class="t-sub" x="694" y="155">copy frames → app.db</text>
+          <text class="t-sub" x="694" y="171">auto at ~1000 pages</text>
+        </svg>
+      </div>
+      <figcaption>Orange frames are commit frames. A reader remembers the last commit frame that existed when it started, and that is its snapshot. Readers never block the writer, and the writer never blocks readers. The cost is that a long-running reader can stop a checkpoint from finishing, so the -wal file keeps growing.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 4. Distributed -->
+  <section>
+    <h2>4. The same idea across machines (Raft, Kafka)</h2>
+    <figure>
+      <div class="scroll">
+        <svg class="d" viewBox="0 0 880 260" role="img" aria-label="Replicated log: the leader appends and fsyncs a write, sends AppendEntries to two followers that each fsync and ack, and the write commits once a majority holds it durably.">
+          <rect class="box" x="20" y="105" width="110" height="50" rx="4"/>
+          <text class="t-title" x="75" y="135" text-anchor="middle">Client</text>
+
+          <rect class="box" x="230" y="90" width="200" height="80" rx="4"/>
+          <text class="t-title" x="330" y="113" text-anchor="middle">Leader</text>
+          <rect class="cell" x="262" y="124" width="22" height="20"/>
+          <rect class="cell" x="288" y="124" width="22" height="20"/>
+          <rect class="cell" x="314" y="124" width="22" height="20"/>
+          <rect class="cell-acc" x="340" y="124" width="22" height="20"/>
+          <text class="t-sub" x="330" y="161" text-anchor="middle">append + fsync locally</text>
+
+          <rect class="box" x="620" y="20" width="220" height="70" rx="4"/>
+          <text class="t-title" x="730" y="48" text-anchor="middle">Follower A</text>
+          <text class="t-sub" x="730" y="68" text-anchor="middle">append + fsync → ack</text>
+
+          <rect class="box" x="620" y="170" width="220" height="70" rx="4"/>
+          <text class="t-title" x="730" y="198" text-anchor="middle">Follower B</text>
+          <text class="t-sub" x="730" y="218" text-anchor="middle">append + fsync → ack</text>
+
+          <line class="ln" x1="130" y1="125" x2="228" y2="125" marker-end="url(#arw)"/>
+          <text x="179" y="116" text-anchor="middle">① write</text>
+
+          <line class="ln" x1="430" y1="110" x2="617" y2="58" marker-end="url(#arw)" marker-start="url(#arw)"/>
+          <text x="500" y="76" text-anchor="middle">② AppendEntries</text>
+          <text class="t-sub" x="500" y="92" text-anchor="middle">③ ack</text>
+
+          <line class="ln" x1="430" y1="150" x2="617" y2="202" marker-end="url(#arw)" marker-start="url(#arw)"/>
+          <text x="500" y="196" text-anchor="middle">② AppendEntries</text>
+          <text class="t-sub" x="500" y="212" text-anchor="middle">③ ack</text>
+
+          <path class="ln-dash" d="M330,170 V236 H75 V158" marker-end="url(#arw)"/>
+          <text class="t-acc" x="205" y="228" text-anchor="middle">④ 2 of 3 durable → commit</text>
+        </svg>
+      </div>
+      <figcaption>Each node runs its own local WAL. What gets replicated is the log, not the data files. A write commits once a majority has fsynced it, so losing any single machine loses nothing. Kafka uses the same model: a partition is an append-only log, and <code>acks=all</code> with the in-sync replicas plays the role of the majority.</figcaption>
+    </figure>
+  </section>
+
+  <section>
+    <h2>Say it in an interview</h2>
+    <ol class="steps">
+      <li>Commit latency is the cost of one sequential fsync. Group commit spreads that cost across many transactions.</li>
+      <li>Data pages are flushed lazily (<em>no-force</em>), and dirty pages may be evicted before commit (<em>steal</em>). That is why recovery needs both redo and undo.</li>
+      <li>Checkpoints limit how long recovery takes and how much log you keep.</li>
+      <li>Things to watch in production: WAL disk usage, checkpoint lag, replica or reader lag that blocks log truncation, and fsync latency (p99).</li>
+    </ol>
+  </section>
+</div>
+</body>
+</html>
