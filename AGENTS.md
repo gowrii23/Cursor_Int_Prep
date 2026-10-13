@@ -6,6 +6,8 @@ Guidance for AI agents working in this repository.
 
 **Cursor_Int_Prep** contains a Flutter mobile app (`interview_prep_tracker/`) for tracking Principal-level interview preparation across DSA, LLD, System Design, Specialized, and Behavioral phases.
 
+`architect/` holds standalone HTML study diagrams (one page per topic, indexed in `architect/README.md`). They are not part of the app build.
+
 ## Development commands
 
 | Task | Command | Notes |

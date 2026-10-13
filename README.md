@@ -2,6 +2,14 @@
 
 Interview prep tracker for Principal-level engineering interviews — a Flutter Android app with hierarchical skill tracking, weighted progress, streaks, and daily reminders.
 
+## Repository layout
+
+| Folder | Contents |
+|--------|----------|
+| [`interview_prep_tracker/`](interview_prep_tracker/) | Flutter app (source) |
+| [`releases/`](releases/) | Prebuilt APKs |
+| [`architect/`](architect/) | System design study diagrams (standalone HTML) |
+
 ## App: Prep Tracker
 
 Located in [`interview_prep_tracker/`](interview_prep_tracker/).
