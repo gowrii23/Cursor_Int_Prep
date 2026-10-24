@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Colibri MoE Inference</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: single reading column, same tokens as wal-architecture.html. Order: why it works, where bytes live, how the router picks, a live simulation, then what to study. */
+:root {
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --fg: #1b2230;
+  --muted: #5d6779;
+  --line: #c9cfdb;
+  --mem: #e8eefb;
+  --disk: #eef1f4;
+  --accent: #c2410c;
+  --ok: #15803d;
+  --ok-bg: #e3f4e8;
+  --bad: #b91c1c;
+  --bad-bg: #fbe5e5;
+  --ck-bg: #fdebdc;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11151c; --surface: #181d26; --fg: #e4e8ef; --muted: #98a2b3; --line: #3a4352;
+    --mem: #1a2438; --disk: #1d222b; --accent: #fb923c; --ok: #4ade80; --ok-bg: #163322;
+    --bad: #f87171; --bad-bg: #3a1a1c; --ck-bg: #3a2414; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11151c; --surface: #181d26; --fg: #e4e8ef; --muted: #98a2b3; --line: #3a4352;
+  --mem: #1a2438; --disk: #1d222b; --accent: #fb923c; --ok: #4ade80; --ok-bg: #163322;
+  --bad: #f87171; --bad-bg: #3a1a1c; --ck-bg: #3a2414; color-scheme: dark;
+}
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.6; }
+.wrap { max-width: 960px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 48px; }
+header { display: grid; gap: 12px; max-width: 68ch; }
+.eyebrow { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+h1 { font-family: var(--font-display); font-size: clamp(30px, 5vw, 44px); line-height: 1.1; margin: 0; text-wrap: balance; }
+h2 { font-family: var(--font-display); font-size: 24px; line-height: 1.2; margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.lede { color: var(--muted); font-size: 17px; }
+.rule { background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 4px; padding: 14px 18px; font-size: 15px; }
+.mnemo { background: var(--ck-bg); border-radius: 4px; padding: 10px 14px; font-size: 15px; max-width: 70ch; }
+code { font-family: var(--font-mono); font-size: .9em; }
+section { display: grid; gap: 14px; }
+section > p { max-width: 68ch; }
+figure { margin: 0; display: grid; gap: 10px; }
+.scroll { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 12px; }
+svg.d { display: block; width: 100%; min-width: 680px; height: auto; color: var(--fg); }
+figcaption { color: var(--muted); font-size: 14.5px; max-width: 72ch; }
+ol.steps, ul.list { margin: 0; padding-left: 1.3em; display: grid; gap: 6px; max-width: 70ch; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; background: var(--surface); }
+th, td { border: 1px solid var(--line); padding: 8px 10px; text-align: left; vertical-align: top; }
+th { font-weight: 600; }
+td.num { font-family: var(--font-mono); text-align: right; white-space: nowrap; }
+.win td { background: var(--ok-bg); }
+.sim { background: var(--surface); border: 1px solid var(--line); border-radius: 6px; padding: 16px; display: grid; gap: 14px; }
+.controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px 20px; }
+.controls label { display: grid; gap: 4px; font-size: 14px; color: var(--muted); }
+.controls output { font-family: var(--font-mono); color: var(--fg); }
+.controls input[type=range] { width: 100%; accent-color: var(--accent); }
+.check { display: flex !important; align-items: center; gap: 8px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.stat { border: 1px solid var(--line); border-radius: 4px; padding: 10px 12px; }
+.stat b { display: block; font-family: var(--font-mono); font-size: 22px; font-weight: 500; }
+.stat span { color: var(--muted); font-size: 13px; }
+button { font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 4px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); cursor: pointer; }
+button:hover { border-color: var(--accent); }
+.bars { display: flex; gap: 2px; align-items: flex-end; height: 70px; }
+.bars div { flex: 1; background: var(--line); min-height: 1px; }
+.bars div.hot { background: var(--accent); }
+.done { list-style: none; padding-left: 0; }
+.done li::before { content: "☐ "; color: var(--accent); }
+
+.d text { font-family: var(--font-mono); font-size: 12.5px; fill: var(--fg); }
+.d .t-title { font-family: var(--font-body); font-weight: 600; font-size: 14px; }
+.d .t-sub { fill: var(--muted); font-size: 11.5px; }
+.d .t-zone { fill: var(--muted); font-size: 11px; letter-spacing: .08em; }
+.d .t-acc { fill: var(--accent); font-weight: 500; }
+.d .box { fill: var(--surface); stroke: var(--fg); stroke-width: 1.4; }
+.d .zone-mem { fill: var(--mem); stroke: none; }
+.d .zone-disk { fill: var(--disk); stroke: none; }
+.d .ln { stroke: var(--fg); stroke-width: 1.5; fill: none; }
+.d .ln-acc { stroke: var(--accent); stroke-width: 2.2; fill: none; }
+.d .ln-dash { stroke: var(--accent); stroke-width: 1.5; fill: none; stroke-dasharray: 6 4; }
+.mk { fill: var(--fg); }
+.mk-acc { fill: var(--accent); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,5 L0,10 z"/></marker>
+    <marker id="arw-acc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mk-acc" d="M0,0 L10,5 L0,10 z"/></marker>
+  </defs>
+</svg>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">LLM inference systems · study note (added 24 Oct 2026)</span>
+    <h1>Colibri: a 744B MoE model on a 25 GB laptop</h1>
+    <p class="lede">Colibri (JustVugg, Apache 2.0, released July 2026) is a pure-C inference engine for GLM-5.2. It never loads the whole model: the always-used parts live in RAM and the experts stream from an NVMe SSD on demand. Goal of this note: learn the basics well enough to explain it in an interview and build a mini version.</p>
+    <p class="rule"><strong>The one idea everything rests on:</strong> in a Mixture-of-Experts model only ~5.4% of the weights (~40B of 744B) compute per token, and only ~11 GB of experts change from one token to the next. So RAM only has to hold the dense part; the disk serves the rest.</p>
+    <p class="mnemo">🧠 <strong>"Few experts work, most sleep on disk; cache the busy, predict the next."</strong> Sparsity → streaming → LRU → prefetch.</p>
+  </header>
+
+  <!-- 1. Hierarchy -->
+  <section>
+    <h2>1. Where every byte lives</h2>
+    <figure>
+      <div class="scroll">
+        <svg class="d" viewBox="0 0 880 400" role="img" aria-label="Memory hierarchy: the router picks experts per token. RAM holds the dense weights and a per-layer LRU cache of hot experts. On a miss the OS page cache is checked, then the NVMe SSD, which holds all 21,504 experts. Prefetch reads predicted experts early.">
+          <rect class="zone-mem" x="190" y="30" width="670" height="200" rx="6"/>
+          <text class="t-zone" x="206" y="52">RAM · ~25 GB TOTAL</text>
+          <rect class="zone-disk" x="190" y="260" width="670" height="120" rx="6"/>
+          <text class="t-zone" x="206" y="368">NVMe SSD · ~370 GB AT INT4</text>
+
+          <rect class="box" x="20" y="100" width="130" height="60" rx="4"/>
+          <text class="t-title" x="85" y="125" text-anchor="middle">Router</text>
+          <text class="t-sub" x="85" y="145" text-anchor="middle">top-k expert IDs</text>
+
+          <rect class="box" x="220" y="70" width="190" height="64" rx="4"/>
+          <text class="t-title" x="315" y="96" text-anchor="middle">Dense weights</text>
+          <text class="t-sub" x="315" y="116" text-anchor="middle">~17B params ≈ 9.9 GB, resident</text>
+
+          <rect class="box" x="440" y="70" width="190" height="64" rx="4"/>
+          <text class="t-title" x="535" y="96" text-anchor="middle">Expert LRU cache</text>
+          <text class="t-sub" x="535" y="116" text-anchor="middle">per layer, hot experts</text>
+
+          <rect class="box" x="660" y="70" width="180" height="64" rx="4"/>
+          <text class="t-title" x="750" y="96" text-anchor="middle">KV cache (MLA)</text>
+          <text class="t-sub" x="750" y="116" text-anchor="middle">576 vs 32,768 / token</text>
+
+          <rect class="box" x="440" y="160" width="190" height="56" rx="4"/>
+          <text class="t-title" x="535" y="183" text-anchor="middle">OS page cache</text>
+          <text class="t-sub" x="535" y="202" text-anchor="middle">free second tier</text>
+
+          <rect class="box" x="440" y="285" width="190" height="60" rx="4"/>
+          <text class="t-title" x="535" y="310" text-anchor="middle">21,504 experts</text>
+          <text class="t-sub" x="535" y="330" text-anchor="middle">~19 MB each at int4</text>
+
+          <line class="ln" x1="150" y1="130" x2="436" y2="110" marker-end="url(#arw)"/>
+          <text x="290" y="160" text-anchor="middle">① lookup IDs</text>
+          <line class="ln" x1="535" y1="216" x2="535" y2="138" marker-end="url(#arw)"/>
+          <line class="ln" x1="535" y1="285" x2="535" y2="220" marker-end="url(#arw)"/>
+          <text x="545" y="250">② miss → read</text>
+          <path class="ln-dash" d="M85,160 V320 H436" marker-end="url(#arw-acc)"/>
+          <text class="t-acc" x="250" y="312" text-anchor="middle">③ prefetch predicted experts</text>
+        </svg>
+      </div>
+      <figcaption>Read it like a CPU cache hierarchy: L1 = per-layer LRU in RAM, L2 = OS page cache, "main memory" = the NVMe SSD. A cold token costs ~11 GB of disk reads, which is why disk speed decides tokens/second.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 2. Router -->
+  <section>
+    <h2>2. How the router picks experts (toy numbers)</h2>
+    <p>GLM-5.2 uses a DeepSeek-V3-style <em>sigmoid</em> router with a shared expert. Toy layer: 8 experts, top-k = 2. (Real models are much bigger; DeepSeek-V3 uses 256 routed + 1 shared, top-8. GLM-5.2's exact k is not in the sources I used.)</p>
+    <table>
+      <tr><th>Expert</th><th>Score = sigmoid(W·h)</th><th>Balancing bias</th><th>Rank score (score + bias)</th><th>Picked?</th></tr>
+      <tr><td>E0</td><td class="num">0.20</td><td class="num">0</td><td class="num">0.20</td><td></td></tr>
+      <tr class="win"><td>E1</td><td class="num">0.91</td><td class="num">0</td><td class="num">0.91</td><td>✅ 1st</td></tr>
+      <tr><td>E2</td><td class="num">0.35</td><td class="num">0</td><td class="num">0.35</td><td></td></tr>
+      <tr><td>E3</td><td class="num">0.10</td><td class="num">0</td><td class="num">0.10</td><td></td></tr>
+      <tr><td>E4</td><td class="num">0.78</td><td class="num">0</td><td class="num">0.78</td><td>3rd, dropped</td></tr>
+      <tr class="win"><td>E5</td><td class="num">0.40</td><td class="num">+0.40</td><td class="num">0.80</td><td>✅ 2nd</td></tr>
+      <tr><td>E6</td><td class="num">0.15</td><td class="num">0</td><td class="num">0.15</td><td></td></tr>
+      <tr><td>E7</td><td class="num">0.55</td><td class="num">0</td><td class="num">0.55</td><td></td></tr>
+    </table>
+    <ol class="steps">
+      <li><strong>Score:</strong> one small matrix <code>W</code> (experts × hidden) times the token's hidden state <code>h</code>, then sigmoid. Each expert gets an independent 0–1 affinity (no softmax competition).</li>
+      <li><strong>Bias picks:</strong> a learned per-expert bias nudges under-used experts up, which balances load without an auxiliary loss. E5 jumps from 0.40 to 0.80 and beats E4.</li>
+      <li><strong>Top-k:</strong> keep E1 and E5. The other 6 are never touched, which is why they can sleep on disk.</li>
+      <li><strong>Raw scores weight:</strong> weights use the original scores. Total = 0.91 + 0.40 = 1.31, so E1 = 0.91 / 1.31 ≈ <strong>0.69</strong> and E5 = 0.40 / 1.31 ≈ <strong>0.31</strong>.</li>
+      <li><strong>Shared expert always runs:</strong> <code>out = shared(h) + 0.69·E1(h) + 0.31·E5(h)</code>. The shared expert is part of the resident dense block.</li>
+    </ol>
+    <p class="mnemo">🧠 <strong>"Sigmoid scores, bias picks, raw weights mix, shared always sits."</strong></p>
+    <p>Java analogy: the router is a <code>PriorityQueue</code> top-k; the expert store is a Caffeine cache over a slow remote store; prefetch is cache warming from a predicted access pattern.</p>
+  </section>
+
+  <!-- 3. Simulation -->
+  <section>
+    <h2>3. Simulation: router + LRU cache + prefetch</h2>
+    <p>Play with the knobs and watch the hit rate and disk reads change. This is a <em>toy model</em> (8 layers × 64 experts, top-4, 19 MB experts, Zipf-like routing popularity) meant to build intuition, not to reproduce Colibri's real numbers.</p>
+    <div class="sim">
+      <div class="controls">
+        <label>LRU slots per layer: <output id="o-cache">8</output>
+          <input type="range" id="cache" min="0" max="64" value="8"></label>
+        <label>Routing skew (higher = a few experts are popular): <output id="o-skew">1.0</output>
+          <input type="range" id="skew" min="0" max="20" value="10"></label>
+        <label>NVMe read speed: <output id="o-disk">5.0 GB/s</output>
+          <input type="range" id="disk" min="5" max="140" value="50"></label>
+        <label class="check"><input type="checkbox" id="pre"> Router-lookahead prefetch (guess is right 71.6% of the time)</label>
+      </div>
+      <div><button id="run">Run 200 tokens</button></div>
+      <div class="stats">
+        <div class="stat"><b id="s-hit">–</b><span>expert cache hit rate</span></div>
+        <div class="stat"><b id="s-mb">–</b><span>disk read per token</span></div>
+        <div class="stat"><b id="s-ms">–</b><span>disk time per token (stalls)</span></div>
+        <div class="stat"><b id="s-pre">–</b><span>misses hidden by prefetch</span></div>
+      </div>
+      <div>
+        <p class="lede" style="font-size:14px">Layer 0 expert usage (orange = currently in its LRU cache):</p>
+        <div class="bars" id="bars"></div>
+      </div>
+    </div>
+    <ol class="steps">
+      <li>Set slots to 0: every routed expert is a disk read (4 × 8 × 19 MB ≈ 608 MB/token). Disk time explodes, which is the "naive streaming" baseline.</li>
+      <li>Raise slots: hit rate climbs fast at first, then flattens. That's the long-tail shape of expert popularity.</li>
+      <li>Lower skew toward 0 (uniform routing): caching barely helps. Colibri works because real routing is not uniform.</li>
+      <li>Turn on prefetch: the same misses still read the disk, but most reads overlap with compute, so the stall time drops.</li>
+    </ol>
+  </section>
+
+  <!-- 4. Other techniques -->
+  <section>
+    <h2>4. The other tricks in the engine</h2>
+    <table>
+      <tr><th>Technique</th><th>What it buys</th><th>Analogy</th></tr>
+      <tr><td>int8 / int4 / int2 quantization, hand-written AVX2 kernels</td><td>~1.5 TB model → ~370 GB on disk; integer dot products are fast on CPU</td><td>Compressing a file before sending it</td></tr>
+      <tr><td>MLA attention (compressed KV cache)</td><td>576 values/token instead of 32,768 (~57× smaller), so long context fits in RAM</td><td>Storing a summary instead of the full log</td></tr>
+      <tr><td>MTP speculative decoding</td><td>The model's own multi-token head drafts tokens; ~2.2–2.8 tokens per forward pass, so fewer disk trips per token</td><td>Batching DB writes</td></tr>
+      <tr><td>Async expert readahead + router-lookahead prefetch</td><td>Disk reads overlap compute; routing was measured ~71.6% predictable</td><td>CPU branch prediction</td></tr>
+      <tr><td>KV-cache persistence</td><td>Conversations reopen warm after a restart</td><td>Session snapshot</td></tr>
+      <tr><td>Token-exact oracle tests vs Hugging Face transformers</td><td>Proves the C forward pass is correct</td><td>Contract tests against a reference implementation</td></tr>
+      <tr><td>Zero dependencies, OpenAI-compatible server</td><td>Builds anywhere; plugs into existing tools</td><td>Static binary + standard API</td></tr>
+    </table>
+    <p>Reported speeds (community, hardware-dependent): ~0.3–1.8 tok/s, vs ~30–50 tok/s on a cloud H100. It's a correctness-first, slow-but-local engine.</p>
+  </section>
+
+  <!-- 5. Study plan -->
+  <section>
+    <h2>5. What to study (basics first)</h2>
+    <table>
+      <tr><th>#</th><th>Area</th><th>Specifically</th><th>Starting point</th></tr>
+      <tr><td>1</td><td>Transformer + MoE math</td><td>Attention, MLA, router/gating, shared experts, MTP heads</td><td>Covered in the LLM course; revise MoE + MLA</td></tr>
+      <tr><td>2</td><td>Quantization</td><td>int4/int8 packing, per-block scales, quality loss</td><td>Covered in the LLM course; revise block formats (Q8_0, Q4)</td></tr>
+      <tr><td>3</td><td>Low-level C + SIMD</td><td>Pointers, alignment, AVX2 intrinsics, OpenMP, cache-friendly loops</td><td>Biggest gap (Java hides this); start here</td></tr>
+      <tr><td>4</td><td>OS + storage</td><td>mmap, page cache, async I/O, NVMe bandwidth, LRU, prefetching</td><td>Strong: same as distributed-systems caching</td></tr>
+      <tr><td>5</td><td>Inference engineering</td><td>KV cache, speculative decoding, profiling tok/s, oracle testing</td><td>Thesis gives the Hugging Face side</td></tr>
+    </table>
+    <ul class="list done">
+      <li>Explain sparsity → streaming → LRU → prefetch in 2 minutes without notes</li>
+      <li>Redo the router table above on paper with new numbers</li>
+      <li>Explain why MLA shrinks the KV cache, and why MTP reduces disk trips</li>
+      <li>Write a dense forward pass in C for a tiny model (llama2.c style); check logits vs transformers</li>
+      <li>Add int8 quantization + one AVX2 dot-product kernel; measure the speedup</li>
+      <li>Mini-Colibri: small open MoE, experts in one file, <code>mmap</code> + per-layer LRU, count disk bytes/token</li>
+      <li>Add prefetch and compare stall time (same experiment as the simulation above)</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>Say it in an interview</h2>
+    <ol class="steps">
+      <li>MoE makes compute sparse, so memory, not FLOPs, is the real constraint. Colibri turns the memory problem into a caching problem.</li>
+      <li>Treat VRAM, RAM and NVMe as one hierarchy: resident dense weights, per-layer LRU of hot experts, OS page cache as L2, SSD as backing store.</li>
+      <li>Hide latency with prediction (router-lookahead, async readahead) and amortize it with speculation (MTP drafts several tokens per pass).</li>
+      <li>The trade-off is explicit: speed for accessibility. It suits batch work, patient agents, and private/offline use, not snappy chat.</li>
+      <li>Correctness first: token-exact validation against a reference implementation before any optimization.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Sources</h2>
+    <ul class="list">
+      <li><a href="https://github.com/JustVugg/colibri">GitHub: JustVugg/colibri</a> (README, Apache 2.0)</li>
+      <li><a href="https://www.noze.it/en/insights/colibri-glm-5-2-local/">noze.it: colibri, GLM 5.2 on 25 GB of RAM</a> (14 Jul 2026)</li>
+      <li><a href="https://dev.to/jamilxt/colibri-running-a-744b-ai-model-on-your-laptop-dpp">DEV Community: Colibri, running a 744B AI model on your laptop</a> (12 Jul 2026)</li>
+    </ul>
+  </section>
+</div>
+
+<script>
+(function () {
+  const L = 8, E = 64, K = 4, EXPERT_MB = 19, TOKENS = 200, PREDICT = 0.716;
+  const $ = id => document.getElementById(id);
+  function rng(seed) { return function () { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; }; }
+  function popularity(skew, rand) {
+    const order = [...Array(E).keys()].sort(() => rand() - 0.5);
+    const w = new Array(E);
+    order.forEach((e, rank) => { w[e] = 1 / Math.pow(rank + 1, skew); });
+    return w;
+  }
+  function pickTopK(w, rand) {
+    const pool = w.map((x, e) => [x, e]), out = [];
+    for (let k = 0; k < K; k++) {
+      let sum = 0; for (const p of pool) sum += p[0];
+      let r = rand() * sum, i = 0;
+      while (i < pool.length - 1 && (r -= pool[i][0]) > 0) i++;
+      out.push(pool[i][1]); pool.splice(i, 1);
+    }
+    return out;
+  }
+  function label() {
+    $("o-cache").textContent = $("cache").value;
+    $("o-skew").textContent = ($("skew").value / 10).toFixed(1);
+    $("o-disk").textContent = ($("disk").value / 10).toFixed(1) + " GB/s";
+  }
+  function run() {
+    label();
+    const slots = +$("cache").value, skew = $("skew").value / 10;
+    const gbps = $("disk").value / 10, prefetch = $("pre").checked;
+    const rand = rng(42);
+    const pops = [...Array(L)].map(() => popularity(skew, rand));
+    const caches = [...Array(L)].map(() => []);
+    const usage0 = new Array(E).fill(0);
+    let hits = 0, misses = 0, hidden = 0;
+    for (let t = 0; t < TOKENS; t++) {
+      for (let l = 0; l < L; l++) {
+        const chosen = pickTopK(pops[l], rand);
+        for (const e of chosen) {
+          if (l === 0) usage0[e]++;
+          const c = caches[l], i = c.indexOf(e);
+          if (i >= 0) { hits++; c.splice(i, 1); c.push(e); continue; }
+          misses++;
+          if (prefetch && rand() < PREDICT) hidden++;
+          if (slots > 0) { c.push(e); if (c.length > slots) c.shift(); }
+        }
+      }
+    }
+    const total = hits + misses;
+    const mbPerTok = misses * EXPERT_MB / TOKENS;
+    const stallMb = (misses - hidden) * EXPERT_MB / TOKENS;
+    $("s-hit").textContent = (100 * hits / total).toFixed(1) + "%";
+    $("s-mb").textContent = mbPerTok.toFixed(0) + " MB";
+    $("s-ms").textContent = (stallMb / (gbps * 1000) * 1000).toFixed(0) + " ms";
+    $("s-pre").textContent = prefetch ? (100 * hidden / Math.max(misses, 1)).toFixed(0) + "%" : "off";
+    const max = Math.max(...usage0, 1), cached = new Set(caches[0]);
+    $("bars").innerHTML = usage0.map((u, e) =>
+      `<div class="${cached.has(e) ? "hot" : ""}" style="height:${(100 * u / max).toFixed(0)}%" title="E${e}: ${u} uses"></div>`).join("");
+  }
+  ["cache", "skew", "disk", "pre"].forEach(id => $(id).addEventListener("input", run));
+  $("run").addEventListener("click", run);
+  run();
+})();
+</script>
+</body>
+</html>
