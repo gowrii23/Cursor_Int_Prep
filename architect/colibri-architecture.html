@@ -129,7 +129,7 @@ button:hover { border-color: var(--accent); }
 
           <rect class="box" x="220" y="70" width="190" height="64" rx="4"/>
           <text class="t-title" x="315" y="96" text-anchor="middle">Dense weights</text>
-          <text class="t-sub" x="315" y="116" text-anchor="middle">~17B params ≈ 9.9 GB, resident</text>
+          <text class="t-sub" x="315" y="116" text-anchor="middle">~17B params, 9.9 GB</text>
 
           <rect class="box" x="440" y="70" width="190" height="64" rx="4"/>
           <text class="t-title" x="535" y="96" text-anchor="middle">Expert LRU cache</text>
@@ -147,8 +147,8 @@ button:hover { border-color: var(--accent); }
           <text class="t-title" x="535" y="310" text-anchor="middle">21,504 experts</text>
           <text class="t-sub" x="535" y="330" text-anchor="middle">~19 MB each at int4</text>
 
-          <line class="ln" x1="150" y1="130" x2="436" y2="110" marker-end="url(#arw)"/>
-          <text x="290" y="160" text-anchor="middle">① lookup IDs</text>
+          <path class="ln" d="M150,148 H425 V102 H436" marker-end="url(#arw)"/>
+          <text x="290" y="170" text-anchor="middle">① look up expert IDs</text>
           <line class="ln" x1="535" y1="216" x2="535" y2="138" marker-end="url(#arw)"/>
           <line class="ln" x1="535" y1="285" x2="535" y2="220" marker-end="url(#arw)"/>
           <text x="545" y="250">② miss → read</text>
